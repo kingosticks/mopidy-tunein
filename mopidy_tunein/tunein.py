@@ -86,6 +86,20 @@ def parse_asx(data):
     for ref in element.findall('entry/ref'):
         yield ref.get('href', '').strip()
 
+# This is all broken: mopidy/mopidy#225
+# from gi.repository import TotemPlParser
+# def totem_plparser(uri):
+#     results = []
+#     def entry_parsed(parser, uri, metadata):
+#         results.append(uri)
+
+#     parser = TotemPlParser.Parser.new()
+#     someid = parser.connect('entry-parsed', entry_parsed)
+#     res = parser.parse(uri, False)
+#     parser.disconnect(someid)
+#     if res != TotemPlParser.ParserResult.SUCCESS:
+#         logger.debug('Failed to parse playlist')
+#     return results
 
 def find_playlist_parser(extension, content_type):
     extension_map = {'.asx' : parse_asx,
