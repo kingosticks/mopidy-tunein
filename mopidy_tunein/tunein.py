@@ -193,7 +193,8 @@ class Tunein(object):
         if listings:
             return listings[0]
 
-    def _extract_stream_urls(self, url):
+    def parse_stream_url(self, url):
+        logger.debug('Using tunein stream url parsing')
         extension = urlparse.urlparse(url).path[-4:]
         if extension in ['.mp3', '.wma']:
             # Catch these easy ones
@@ -210,16 +211,16 @@ class Tunein(object):
             results = [url]
         return results
 
-    def tune(self, station_id, get_url=False):
+    def tune(self, station_id, parse_url=True):
         logger.debug('Tuning station id %s' % station_id)
         args = '&id=' + station_id
         for stream in self._tunein('Tune.ashx', args):
             if 'url' in stream:
                 # TODO Cache these playable stream urls?
-                if get_url:
-                    return [stream['url']]
+                if parse_url:
+                    return self.parse_stream_url(stream['url'])
                 else:
-                    return self._extract_stream_urls(stream['url'])
+                    return [stream['url']]
         
         logger.error('Failed to tune station id %s' % station_id)
         return []

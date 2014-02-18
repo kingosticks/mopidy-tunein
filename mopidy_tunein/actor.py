@@ -99,12 +99,23 @@ class TuneinLibrary(backend.LibraryProvider):
 
 
 class TuneinPlayback(backend.PlaybackProvider):
+    def __init__(self, audio, backend):
+        super(TuneinPlayback, self).__init__(audio, backend)
+        self._scanner = scan.Scanner(min_duration=None, timeout=1000)
+
     def change_track(self, track):
         variant, identifier = translator.parse_uri(track.uri)
         if variant != 'station':
             return False
-        uris = self.backend.tunein.tune(identifier)
+        uris = self.backend.tunein.tune(identifier, parse_url=False)
         if not uris:
             return False        
-        track = track.copy(uri=uris[0])
+        try:
+            data = self._scanner.scan(uris[0])
+            track = scan.audio_data_to_track(data)
+        except exceptions.ScannerError as e:
+            logger.debug('Problem looking up %s: %s.', uris[0], e)
+            uris = self.backend.tunein.parse_stream_url(uris[0])
+            track = track.copy(uri=uris[0])
+        
         return super(TuneinPlayback, self).change_track(track)
