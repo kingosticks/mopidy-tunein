@@ -35,7 +35,7 @@ def station_to_ref(station):
     guide_id = station.get('guide_id', '??')
     uri = unparse_uri('station', guide_id)
     name = station.get('text', station['URL'])
-    # TODO: Should we show what's playing for all stations?
+    # TODO: Should the name include 'now playing' for all stations?
     if get_id_type(guide_id) == TUNEIN_ID_TOPIC:
         name = name + ' [%s]' % station.get('subtext', '??')
     return Ref.track(uri=uri, name=name)
@@ -59,7 +59,6 @@ def section_to_ref(category):
         uri = unparse_uri('section', guide_id)
     return Ref.directory(uri=uri, name=category['text'])
 
-# TODO: Move this into the tunein client
 def get_id_type(guide_id):
     return {'p' : TUNEIN_ID_PROGRAM,
             's' : TUNEIN_ID_STATION,
