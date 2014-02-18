@@ -124,7 +124,7 @@ class Tunein(object):
     def __init__(self, timeout):
         self._base_uri = 'http://opml.radiotime.com/%s'
         self._timeout = timeout / 1000.0
-        self._stations = {}
+        self.reload()
         
     def reload(self):
         self._stations = {}
