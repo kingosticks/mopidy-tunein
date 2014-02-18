@@ -17,36 +17,41 @@ logger = logging.getLogger(__name__)
 
 
 class cache(object):
-    """Decorator that caches a function's return value each time it is called 
-    within a TTL.
-    """
+    # TODO: merge this to util library (copied from mopidy-spotify)
 
-    def __init__(self, ttl=3600):
+    def __init__(self, ctl=0, ttl=3600):
         self.cache = {}
+        self.ctl = ctl
         self.ttl = ttl
+        self._call_count = 0
 
     def __call__(self, func):
-        def wrapped(*args):
+        def _memoized(*args):
             now = time.time()
             try:
                 value, last_update = self.cache[args]
-                if (now - last_update > self.ttl):
+                age = now - last_update
+                if (self._call_count > self.ctl or age > self.ttl):
+                    self._call_count = 0
                     raise AttributeError
-                # logger.info('Cache hit! ' + repr(value))
+                if self.ctl:
+                    self._call_count += 1
                 return value
+            
             except (KeyError, AttributeError):
                 value = func(*args)
                 self.cache[args] = (value, now)
-                # logger.info('Cache save! ' + repr(value))
                 return value
+            
             except TypeError:
                 return func(*args) # uncachable
         
         def clear():
             self.cache.clear()
 
-        wrapped.clear = clear
-        return wrapped
+        _memoized.clear = clear
+        return _memoized
+
 
 def parse_m3u(data):
     # Copied from mopidy.audio.playlists
@@ -71,6 +76,7 @@ def parse_pls(data):
 
 def parse_asx(data):
     # Copied from mopidy.audio.playlists
+    # Mopidy doesn't support asx: mopidy/mopidy#687
     try:
         for event, element in elementtree.iterparse(data):
             element.tag = element.tag.lower()  # normalize
@@ -79,6 +85,7 @@ def parse_asx(data):
 
     for ref in element.findall('entry/ref'):
         yield ref.get('href', '').strip()
+
 
 def find_playlist_parser(extension, content_type):
     extension_map = {'.asx' : parse_asx,
@@ -107,8 +114,8 @@ class Tunein(object):
         
     def reload(self):
         self._stations = {}
-        #categories.clear()
-        #section.clear()
+        self._tunein.clear()
+        self._get_playlist.clear()
 
     def _filter_results(self, data, section_name='', map_func=None):
         for section in data:
@@ -189,6 +196,7 @@ class Tunein(object):
     def _extract_stream_urls(self, url):
         extension = urlparse.urlparse(url).path[-4:]
         if extension in ['.mp3', '.wma']:
+            # Catch these easy ones
             return [url]
         results = []
         playlist, content_type = self._get_playlist(url)
@@ -202,13 +210,16 @@ class Tunein(object):
             results = [url]
         return results
 
-    def tune(self, station_id):
+    def tune(self, station_id, get_url=False):
         logger.debug('Tuning station id %s' % station_id)
         args = '&id=' + station_id
         for stream in self._tunein('Tune.ashx', args):
             if 'url' in stream:
                 # TODO Cache these playable stream urls?
-                return self._extract_stream_urls(stream['url'])
+                if get_url:
+                    return [stream['url']]
+                else:
+                    return self._extract_stream_urls(stream['url'])
         
         logger.error('Failed to tune station id %s' % station_id)
         return []
