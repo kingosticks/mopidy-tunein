@@ -59,6 +59,7 @@ def parse_m3u(data):
         if not line.startswith('#') and line.strip():
             yield line.strip()
 
+
 def parse_pls(data):
     # Copied from mopidy.audio.playlists
     try:
@@ -72,6 +73,7 @@ def parse_pls(data):
             continue
         for i in xrange(cp.getint(section, 'numberofentries')):
             yield cp.get(section, 'file%d' % (i+1))
+
 
 def parse_asx(data):
     # Copied from mopidy.audio.playlists
@@ -99,6 +101,7 @@ def parse_asx(data):
 #     if res != TotemPlParser.ParserResult.SUCCESS:
 #         logger.debug('Failed to parse playlist')
 #     return results
+
 
 def find_playlist_parser(extension, content_type):
     extension_map = {'.asx': parse_asx,
@@ -148,15 +151,15 @@ class Tunein(object):
 
     def categories(self, category=''):
         if category == 'location':
-            args = '&id=r0' # Annoying special case
+            args = '&id=r0'  # Annoying special case
         elif category == 'language':
             args = '&c=lang'
-            return [] # Tunein's API is a mess here, cba
+            return []  # Tunein's API is a mess here, cba
         else:
             args = '&c=' + category
         results = self._tunein('Browse.ashx', args)
         if (category == 'podcast'):
-            results = self._filter_results(results) # More API fun please!
+            results = self._filter_results(results)  # More API fun please!
         return results
 
     def locations(self, location):
@@ -192,7 +195,6 @@ class Tunein(object):
 
     def _map_listing(self, listing):
         # We've already checked 'guide_id' exists
-        #url = 'http://opml.radiotime.com/Tune.ashx?id=%s' % listing['guide_id']
         return {'text': listing.get('name', '???'),
                 'guide_id': listing['guide_id'],
                 'type': 'audio',
@@ -267,7 +269,7 @@ class Tunein(object):
             data = response.json()
             if (data['head']['status'] != '200'):
                 raise requests.exceptions.HTTPError(data['head']['status'],
-                    data['head']['fault'])
+                        data['head']['fault'])
             return data['body']
         except Exception as e:
             logger.error('Tunein request failed: %s', e)
@@ -277,7 +279,7 @@ class Tunein(object):
     def _get_playlist(self, uri):
         logger.debug('Playlist request: %s', uri)
         try:
-            # Defer downloading the body until know it's not a stream 
+            # Defer downloading the body until know it's not a stream
             response = requests.get(uri, timeout=self._timeout, stream=True)
             response.raise_for_status()
             content_type = response.headers.get('content-type', 'audio/mpeg')
