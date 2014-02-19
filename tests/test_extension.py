@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import unittest
 
-from mopidy_tunein import Extension, frontend as frontend_lib
+from mopidy_tunein import Extension
 
 
 class ExtensionTest(unittest.TestCase):
