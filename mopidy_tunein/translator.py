@@ -4,7 +4,7 @@ import logging
 import re
 import urllib
 
-from mopidy.models import Ref, Track
+from mopidy.models import Ref
 
 logger = logging.getLogger(__name__)
 

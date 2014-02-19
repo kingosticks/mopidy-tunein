@@ -80,7 +80,7 @@ class TuneinLibrary(backend.LibraryProvider):
         station = self.backend.tunein.station(identifier)
         if not station:
             return []
-        
+
         ref = translator.station_to_ref(station)
         return [Track(uri=ref.uri, name=ref.name)]
 
@@ -109,7 +109,7 @@ class TuneinPlayback(backend.PlaybackProvider):
             return False
         uris = self.backend.tunein.tune(identifier, parse_url=False)
         if not uris:
-            return False        
+            return False
         try:
             data = self._scanner.scan(uris[0])
             track = scan.audio_data_to_track(data)
@@ -117,5 +117,5 @@ class TuneinPlayback(backend.PlaybackProvider):
             logger.debug('Problem looking up %s: %s.', uris[0], e)
             uris = self.backend.tunein.parse_stream_url(uris[0])
             track = track.copy(uri=uris[0])
-        
+
         return super(TuneinPlayback, self).change_track(track)

@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 import ConfigParser as configparser
-import json
 import logging
 import requests
 import StringIO
@@ -37,7 +36,7 @@ class cache(object):
                 if self.ctl:
                     self._call_count += 1
                 return value
-            
+
             except (KeyError, AttributeError):
                 value = func(*args)
                 self.cache[args] = (value, now)
@@ -55,7 +54,7 @@ class cache(object):
 
 def parse_m3u(data):
     # Copied from mopidy.audio.playlists
-    # Mopidy version expects a header but it's not always present 
+    # Mopidy version expects a header but it's not always present
     for line in data.readlines():
         if not line.startswith('#') and line.strip():
             yield line.strip()
@@ -102,12 +101,12 @@ def parse_asx(data):
 #     return results
 
 def find_playlist_parser(extension, content_type):
-    extension_map = {'.asx' : parse_asx,
-                     '.m3u' : parse_m3u,
-                     '.pls' : parse_pls}
-    content_type_map = {'video/x-ms-asf'        : parse_asx,
-                        'application/x-mpegurl' : parse_m3u,
-                        'audio/x-scpls'         : parse_pls}
+    extension_map = {'.asx': parse_asx,
+                     '.m3u': parse_m3u,
+                     '.pls': parse_pls}
+    content_type_map = {'video/x-ms-asf': parse_asx,
+                        'application/x-mpegurl': parse_m3u,
+                        'audio/x-scpls': parse_pls}
 
     parser = extension_map.get(extension, None)
     if not parser and content_type:
@@ -124,10 +123,10 @@ class Tunein(object):
     def __init__(self, timeout):
         self._base_uri = 'http://opml.radiotime.com/%s'
         self._timeout = timeout / 1000.0
-        self.reload()
+        self._stations = {}
         
     def reload(self):
-        self._stations = {}
+        self._stations.clear()
         self._tunein.clear()
         self._get_playlist.clear()
 
@@ -194,11 +193,10 @@ class Tunein(object):
     def _map_listing(self, listing):
         # We've already checked 'guide_id' exists
         #url = 'http://opml.radiotime.com/Tune.ashx?id=%s' % listing['guide_id']
-        return {'text'     : listing.get('name', '???'),
-                'guide_id' : listing['guide_id'],
-                'type'     : 'audio',
-                #'URL'      : url, # TODO needed?
-                'subtext'  : listing.get('slogan', '')}
+        return {'text': listing.get('name', '???'),
+                'guide_id': listing['guide_id'],
+                'type': 'audio',
+                'subtext': listing.get('slogan', '')}
 
     def _station_info(self, station_id):
         args = '&c=composite&detail=listing&id=' + station_id
@@ -220,7 +218,7 @@ class Tunein(object):
             if parser:            
                 playlist_data = StringIO.StringIO(playlist)
                 results = [u for u in parser(playlist_data) if u is not None]
-        
+
         if not results:
             results = [url]
         return results
@@ -235,7 +233,7 @@ class Tunein(object):
                     return self.parse_stream_url(stream['url'])
                 else:
                     return [stream['url']]
-        
+
         logger.error('Failed to tune station id %s' % station_id)
         return []
 
@@ -264,13 +262,13 @@ class Tunein(object):
         uri = (self._base_uri % variant) + '?render=json' + args
         logger.debug('Tunein request: %s', uri)
         try:
-            r = requests.get(uri, timeout=self._timeout)
-            r.raise_for_status()
-            resp = r.json()
-            if (resp['head']['status'] != '200'):
-                raise requests.exceptions.HTTPError(resp['head']['status'],
-                    resp['head']['fault'])
-            return resp['body']
+            response = requests.get(uri, timeout=self._timeout)
+            response.raise_for_status()
+            data = response.json()
+            if (data['head']['status'] != '200'):
+                raise requests.exceptions.HTTPError(data['head']['status'],
+                    data['head']['fault'])
+            return data['body']
         except Exception as e:
             logger.error('Tunein request failed: %s', e)
         return {}
@@ -279,17 +277,17 @@ class Tunein(object):
     def _get_playlist(self, uri):
         logger.debug('Playlist request: %s', uri)
         try:
-            # Defer downloading the content until know it's not a stream 
-            r = requests.get(uri, timeout=self._timeout, stream=True)
-            r.raise_for_status()
-            content_type = r.headers.get('content-type', 'audio/mpeg')
+            # Defer downloading the body until know it's not a stream 
+            response = requests.get(uri, timeout=self._timeout, stream=True)
+            response.raise_for_status()
+            content_type = response.headers.get('content-type', 'audio/mpeg')
             if content_type == 'audio/mpeg':
                 logger.debug('Found streaming audio at %s' % uri)
-                content = None
+                data = None
             else:
-                content = r.text
-            r.close()
-            return (content, content_type)
+                data = response.text
+            response.close()
+            return (data, content_type)
         except Exception as e:
             logger.error('Playlist request failed: %s', e)
         return (None, None)
