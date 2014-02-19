@@ -5,13 +5,13 @@ install:
   - "sudo wget -O /etc/apt/sources.list.d/mopidy.list http://apt.mopidy.com/mopidy.list"
   - "sudo apt-get update || true"
   - "sudo apt-get install mopidy"
-  - "pip install coveralls flake8 mopidy==dev"
+  - "pip install --allow-unverified=mopidy coveralls flake8 mopidy==dev"
 
 before_script:
   - "rm $VIRTUAL_ENV/lib/python$TRAVIS_PYTHON_VERSION/no-global-site-packages.txt"
 
 script:
-  - "flake8 $(find . -iname '*.py')"
+  - "flake8 mopidy_tunein tests"
   - "nosetests --with-coverage --cover-package=mopidy_tunein"
 
 after_success:
