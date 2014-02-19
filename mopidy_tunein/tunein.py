@@ -41,10 +41,10 @@ class cache(object):
                 value = func(*args)
                 self.cache[args] = (value, now)
                 return value
-            
+
             except TypeError:
-                return func(*args) # uncachable
-        
+                return func(*args)
+
         def clear():
             self.cache.clear()
 
@@ -127,7 +127,7 @@ class Tunein(object):
         self._base_uri = 'http://opml.radiotime.com/%s'
         self._timeout = timeout / 1000.0
         self._stations = {}
-        
+
     def reload(self):
         self._stations.clear()
         self._tunein.clear()
@@ -165,7 +165,7 @@ class Tunein(object):
     def locations(self, location):
         args = '&id=' + location
         results = self._tunein('Browse.ashx', args)
-        # TODO: Support filters here 
+        # TODO: Support filters here
         return [x for x in results if 'guide_id' in x]
 
     def _browse(self, section_name, guide_id):
@@ -186,7 +186,7 @@ class Tunein(object):
         return self._browse('Related', guide_id)
 
     def shows(self, guide_id):
-        return self._browse('Show', guide_id)#
+        return self._browse('Show', guide_id)
 
     def episodes(self, guide_id):
         args = '&c=pbrowse&id=' + guide_id
@@ -211,13 +211,12 @@ class Tunein(object):
         logger.debug('Using tunein stream url parsing')
         extension = urlparse.urlparse(url).path[-4:]
         if extension in ['.mp3', '.wma']:
-            # Catch these easy ones
-            return [url]
+            return [url]  # Catch these easy ones
         results = []
         playlist, content_type = self._get_playlist(url)
         if playlist:
             parser = find_playlist_parser(extension, content_type)
-            if parser:            
+            if parser:
                 playlist_data = StringIO.StringIO(playlist)
                 results = [u for u in parser(playlist_data) if u is not None]
 
@@ -269,7 +268,7 @@ class Tunein(object):
             data = response.json()
             if (data['head']['status'] != '200'):
                 raise requests.exceptions.HTTPError(data['head']['status'],
-                        data['head']['fault'])
+                                                    data['head']['fault'])
             return data['body']
         except Exception as e:
             logger.error('Tunein request failed: %s', e)

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 TUNEIN_ID_PROGRAM = 'program'
 TUNEIN_ID_STATION = 'station'
-TUNEIN_ID_GROUP= 'group'
+TUNEIN_ID_GROUP = 'group'
 TUNEIN_ID_TOPIC = 'topic'
 TUNEIN_ID_CATEGORY = 'category'
 TUNEIN_ID_REGION = 'region'

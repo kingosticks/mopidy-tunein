@@ -20,8 +20,6 @@ class ExtensionTest(unittest.TestCase):
 
         schema = ext.get_config_schema()
 
-        # TODO Test the content of your config schema
-        #self.assertIn('username', schema)
-        #self.assertIn('password', schema)
+        self.assertIn('timeout', schema)
 
     # TODO Write more tests
