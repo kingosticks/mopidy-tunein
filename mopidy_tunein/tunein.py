@@ -133,21 +133,31 @@ class Tunein(object):
         self._tunein.clear()
         self._get_playlist.clear()
 
-    def _filter_results(self, data, section_name='', map_func=None):
-        for section in data:
-            section_key = section.get('key', '').lower()
-            if section_key.startswith(section_name.lower()):
-                results = []
-                for item in section['children']:
-                    if 'guide_id' in item:
-                        if map_func:
-                            station = map_func(item)
-                        else:
-                            station = item
-                        self._stations[station['guide_id']] = station
-                        results.append(station)
-                return results
-        return []
+    def _filter_results(self, data, section_name=None, map_func=None):
+        results = []
+        
+        def grab_item(item):
+            if 'guide_id' not in item:
+                return
+            if item.get('type','link') == 'link':
+                results.append(item)
+                return
+            if map_func:
+                station = map_func(item)
+            else:
+                station = item
+            self._stations[station['guide_id']] = station
+            results.append(station)
+        
+        for item in data:
+            if section_name is not None:
+                section_key = item.get('key', '').lower()
+                if section_key.startswith(section_name.lower()):                
+                    for child in item['children']:
+                        grab_item(child)
+            else:
+                grab_item(item)
+        return results
 
     def categories(self, category=''):
         if category == 'location':
@@ -157,16 +167,26 @@ class Tunein(object):
             return []  # Tunein's API is a mess here, cba
         else:
             args = '&c=' + category
-        results = self._tunein('Browse.ashx', args)
-        if (category == 'podcast'):
-            results = self._filter_results(results)  # More API fun please!
+
+        # Take a copy so we don't modify the cached result
+        results = list(self._tunein('Browse.ashx', args))
+        if category == 'podcast':
+            results = self._filter_results(results, '')  # More API fun please!
+        elif category == '':
+            trending = {'text': 'Trending', 
+                        'key': 'trending', 
+                        'type': 'link',
+                        'URL': self._base_uri % 'Browse.ashx?c=trending'}
+            results.append(trending)
+        else:
+            results = self._filter_results(results)
         return results
 
     def locations(self, location):
         args = '&id=' + location
         results = self._tunein('Browse.ashx', args)
         # TODO: Support filters here
-        return [x for x in results if 'guide_id' in x]
+        return [x for x in results if x.get('link','') == 'link']
 
     def _browse(self, section_name, guide_id):
         args = '&id=' + guide_id
