@@ -168,15 +168,17 @@ class Tunein(object):
         else:
             args = '&c=' + category
 
-        # Take a copy so we don't modify the cached result
+        # Take a copy so we don't modify the cached data
         results = list(self._tunein('Browse.ashx', args))
-        if category == 'podcast':
-            results = self._filter_results(results, '')  # More API fun please!
+        if category in ('podcast', 'local'):
+            results = self._filter_results(results, '')  # Flatten the results!
         elif category == '':
             trending = {'text': 'Trending', 
                         'key': 'trending', 
                         'type': 'link',
                         'URL': self._base_uri % 'Browse.ashx?c=trending'}
+            # Filter out the language root category for now
+            results = [x for x in results if x['key'] != 'language']
             results.append(trending)
         else:
             results = self._filter_results(results)
@@ -186,7 +188,7 @@ class Tunein(object):
         args = '&id=' + location
         results = self._tunein('Browse.ashx', args)
         # TODO: Support filters here
-        return [x for x in results if x.get('link','') == 'link']
+        return [x for x in results if x.get('type','') == 'link']
 
     def _browse(self, section_name, guide_id):
         args = '&id=' + guide_id
