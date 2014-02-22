@@ -49,10 +49,10 @@ class TuneinLibrary(backend.LibraryProvider):
         elif variant == "section" and identifier:
             if (self.backend.tunein.related(identifier)):
                 result.append(Ref.directory(
-                        uri='tunein:related:%s' % identifier, name='Related'))
+                    uri='tunein:related:%s' % identifier, name='Related'))
             if (self.backend.tunein.shows(identifier)):
                 result.append(Ref.directory(
-                        uri='tunein:shows:%s' % identifier, name='Shows'))
+                    uri='tunein:shows:%s' % identifier, name='Shows'))
             for station in self.backend.tunein.featured(identifier):
                 result.append(translator.section_to_ref(station))
             for station in self.backend.tunein.local(identifier):

@@ -135,11 +135,11 @@ class Tunein(object):
 
     def _filter_results(self, data, section_name=None, map_func=None):
         results = []
-        
+
         def grab_item(item):
             if 'guide_id' not in item:
                 return
-            if item.get('type','link') == 'link':
+            if item.get('type', 'link') == 'link':
                 results.append(item)
                 return
             if map_func:
@@ -148,11 +148,11 @@ class Tunein(object):
                 station = item
             self._stations[station['guide_id']] = station
             results.append(station)
-        
+
         for item in data:
             if section_name is not None:
                 section_key = item.get('key', '').lower()
-                if section_key.startswith(section_name.lower()):                
+                if section_key.startswith(section_name.lower()):
                     for child in item['children']:
                         grab_item(child)
             else:
@@ -173,8 +173,8 @@ class Tunein(object):
         if category in ('podcast', 'local'):
             results = self._filter_results(results, '')  # Flatten the results!
         elif category == '':
-            trending = {'text': 'Trending', 
-                        'key': 'trending', 
+            trending = {'text': 'Trending',
+                        'key': 'trending',
                         'type': 'link',
                         'URL': self._base_uri % 'Browse.ashx?c=trending'}
             # Filter out the language root category for now
@@ -188,7 +188,7 @@ class Tunein(object):
         args = '&id=' + location
         results = self._tunein('Browse.ashx', args)
         # TODO: Support filters here
-        return [x for x in results if x.get('type','') == 'link']
+        return [x for x in results if x.get('type', '') == 'link']
 
     def _browse(self, section_name, guide_id):
         args = '&id=' + guide_id
