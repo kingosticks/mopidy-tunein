@@ -34,6 +34,7 @@ class TuneinLibrary(backend.LibraryProvider):
     def browse(self, uri):
         result = []
         variant, identifier = translator.parse_uri(uri)
+        logger.debug('Browsing %s' % uri)
         if variant == 'root':
             for category in self.backend.tunein.categories():
                 result.append(translator.category_to_ref(category))
@@ -46,12 +47,14 @@ class TuneinLibrary(backend.LibraryProvider):
             for station in self.backend.tunein.stations(identifier):
                 result.append(translator.station_to_ref(station))
         elif variant == "section" and identifier:
-            result.extend([Ref.directory(uri='tunein:related:%s' % identifier,
-                                         name='Related'),
-                           Ref.directory(uri='tunein:shows:%s' % identifier,
-                                         name='Shows')])
+            if (self.backend.tunein.related(identifier)):
+                result.append(Ref.directory(
+                        uri='tunein:related:%s' % identifier, name='Related'))
+            if (self.backend.tunein.shows(identifier)):
+                result.append(Ref.directory(
+                        uri='tunein:shows:%s' % identifier, name='Shows'))
             for station in self.backend.tunein.featured(identifier):
-                result.append(translator.station_to_ref(station))
+                result.append(translator.section_to_ref(station))
             for station in self.backend.tunein.local(identifier):
                 result.append(translator.station_to_ref(station))
             for station in self.backend.tunein.stations(identifier):
@@ -88,7 +91,7 @@ class TuneinLibrary(backend.LibraryProvider):
         return self.search(query=query, uris=uris)
 
     def search(self, query=None, uris=None):
-        if query is None:
+        if query is None or not query:
             return
         tunein_query = translator.mopidy_to_tunein_query(query)
         tracks = []
