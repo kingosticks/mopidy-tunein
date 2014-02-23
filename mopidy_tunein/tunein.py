@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import ConfigParser as configparser
 import logging
 import requests
-import StringIO
+import cStringIO
 import time
 import urlparse
 
@@ -239,7 +239,7 @@ class Tunein(object):
         if playlist:
             parser = find_playlist_parser(extension, content_type)
             if parser:
-                playlist_data = StringIO.StringIO(playlist)
+                playlist_data = cStringIO.StringIO(playlist)
                 results = [u for u in parser(playlist_data) if u is not None]
 
         if not results:
@@ -308,7 +308,7 @@ class Tunein(object):
                 logger.debug('Found streaming audio at %s' % uri)
                 data = None
             else:
-                data = response.text
+                data = response.content  # Want the encoded data
             response.close()
             return (data, content_type)
         except Exception as e:
