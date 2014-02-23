@@ -19,7 +19,7 @@ Mopidy-Tunein
    :alt: Test coverage
 
 `Mopidy <http://www.mopidy.com/>`_ extension for playing music from
-`tunein <http://www.tunein.com>`_.
+`TuneIn <http://www.tunein.com>`_.
 
 
 Installation
@@ -29,8 +29,8 @@ Install by running::
 
     pip install Mopidy-Tunein
 
-Or, if available, install the Debian/Ubuntu package from `apt.mopidy.com
-<http://apt.mopidy.com/>`_.
+.. Or, if available, install the Debian/Ubuntu package from `apt.mopidy.com
+.. <http://apt.mopidy.com/>`_.
 
 
 Configuration
@@ -54,7 +54,7 @@ Project resources
 Changelog
 =========
 
-v0.1.0 (UNRELEASED)
+v0.1.0 (2014-02-23)
 ----------------------------------------
 
 - Initial release.
