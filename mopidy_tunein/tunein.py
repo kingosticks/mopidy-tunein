@@ -133,6 +133,15 @@ class Tunein(object):
         self._tunein.clear()
         self._get_playlist.clear()
 
+    def _flatten(self, data):
+        results = []
+        for item in data:
+            if 'children' in item:
+                results.extend(item['children'])
+            else:
+                results.append(item)
+        return results
+
     def _filter_results(self, data, section_name=None, map_func=None):
         results = []
 
@@ -270,9 +279,11 @@ class Tunein(object):
 
     def search(self, query):
         # "Search.ashx?query=" + query + filterVal
+        logger.debug('Searching for "%s"' % query)
         args = '&query=' + query
+        search_results = self._tunein('Search.ashx', args)
         results = []
-        for item in self._tunein('Search.ashx', args):
+        for item in self._flatten(search_results):
             if item.get('type', '') == 'audio':
                 # Only return stations
                 self._stations[item['guide_id']] = item
