@@ -3,10 +3,12 @@ from __future__ import unicode_literals
 import ConfigParser as configparser
 import logging
 import requests
-import cStringIO
 import time
 import urlparse
-
+try:
+    import cStringIO as StringIO
+except ImportError:
+    import StringIO as StringIO
 try:
     import xml.etree.cElementTree as elementtree
 except ImportError:
@@ -248,7 +250,7 @@ class Tunein(object):
         if playlist:
             parser = find_playlist_parser(extension, content_type)
             if parser:
-                playlist_data = cStringIO.StringIO(playlist)
+                playlist_data = StringIO.StringIO(playlist)
                 results = [u for u in parser(playlist_data) if u is not None]
 
         if not results:
@@ -319,7 +321,7 @@ class Tunein(object):
                 logger.debug('Found streaming audio at %s' % uri)
                 data = None
             else:
-                data = response.content  # Want the encoded data
+                data = response.content.decode('utf-8', errors='ignore')
             response.close()
             return (data, content_type)
         except Exception as e:
