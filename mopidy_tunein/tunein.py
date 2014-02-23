@@ -41,7 +41,8 @@ class cache(object):
 
             except (KeyError, AttributeError):
                 value = func(*args)
-                self.cache[args] = (value, now)
+                if value:
+                    self.cache[args] = (value, now)
                 return value
 
             except TypeError:
@@ -306,7 +307,7 @@ class Tunein(object):
                                                     data['head']['fault'])
             return data['body']
         except Exception as e:
-            logger.error('Tunein request failed: %s', e)
+            logger.info('Tunein request failed: %s', e)
         return {}
 
     @cache()
@@ -325,5 +326,5 @@ class Tunein(object):
             response.close()
             return (data, content_type)
         except Exception as e:
-            logger.error('Playlist request failed: %s', e)
+            logger.info('Tunein playlist request failed: %s', e)
         return (None, None)
