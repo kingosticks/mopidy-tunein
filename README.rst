@@ -1,13 +1,13 @@
 ****************************
-Mopidy-Tunein
+Mopidy-TuneIn
 ****************************
 
-.. image:: https://pypip.in/v/Mopidy-Tunein/badge.png
-    :target: https://pypi.python.org/pypi/Mopidy-Tunein/
+.. image:: https://pypip.in/v/Mopidy-TuneIn/badge.png
+    :target: https://pypi.python.org/pypi/Mopidy-TuneIn/
     :alt: Latest PyPI version
 
-.. image:: https://pypip.in/d/Mopidy-Tunein/badge.png
-    :target: https://pypi.python.org/pypi/Mopidy-Tunein/
+.. image:: https://pypip.in/d/Mopidy-TuneIn/badge.png
+    :target: https://pypi.python.org/pypi/Mopidy-TuneIn/
     :alt: Number of PyPI downloads
 
 .. image:: https://travis-ci.org/kingosticks/mopidy-tunein.png?branch=master
@@ -30,7 +30,7 @@ Installation
 
 Install by running::
 
-    pip install Mopidy-Tunein
+    pip install Mopidy-TuneIn
 
 .. Or, if available, install the Debian/Ubuntu package from `apt.mopidy.com
 .. <http://apt.mopidy.com/>`_.
@@ -40,7 +40,7 @@ Configuration
 =============
 
 Before starting Mopidy, you must add configuration for
-Mopidy-Tunein to your Mopidy configuration file::
+Mopidy-TuneIn to your Mopidy configuration file::
 
     [tunein]
     timeout = 5000
@@ -51,7 +51,7 @@ Project resources
 
 - `Source code <https://github.com/kingosticks/mopidy-tunein>`_
 - `Issue tracker <https://github.com/kingosticks/mopidy-tunein/issues>`_
-- `Download development snapshot <https://github.com/kingosticks/mopidy-tunein/tarball/master#egg=Mopidy-Tunein-dev>`_
+- `Download development snapshot <https://github.com/kingosticks/mopidy-tunein/tarball/master#egg=Mopidy-TuneIn-dev>`_
 
 
 Changelog

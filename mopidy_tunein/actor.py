@@ -13,22 +13,22 @@ from . import tunein, translator
 logger = logging.getLogger(__name__)
 
 
-class TuneinBackend(pykka.ThreadingActor, backend.Backend):
+class TuneInBackend(pykka.ThreadingActor, backend.Backend):
     uri_schemes = ['tunein']
 
     def __init__(self, config, audio):
-        super(TuneinBackend, self).__init__()
-        self.tunein = tunein.Tunein(config['tunein']['timeout'])
-        self.library = TuneinLibrary(
+        super(TuneInBackend, self).__init__()
+        self.tunein = tunein.TuneIn(config['tunein']['timeout'])
+        self.library = TuneInLibrary(
             backend=self, timeout=config['tunein']['timeout'])
-        self.playback = TuneinPlayback(audio=audio, backend=self)
+        self.playback = TuneInPlayback(audio=audio, backend=self)
 
 
-class TuneinLibrary(backend.LibraryProvider):
-    root_directory = Ref.directory(uri='tunein:root', name='Tunein')
+class TuneInLibrary(backend.LibraryProvider):
+    root_directory = Ref.directory(uri='tunein:root', name='TuneIn')
 
     def __init__(self, backend, timeout):
-        super(TuneinLibrary, self).__init__(backend)
+        super(TuneInLibrary, self).__init__(backend)
         self._scanner = scan.Scanner(min_duration=None, timeout=timeout)
 
     def browse(self, uri):
@@ -101,9 +101,9 @@ class TuneinLibrary(backend.LibraryProvider):
         return SearchResult(uri='tunein:search', tracks=tracks)
 
 
-class TuneinPlayback(backend.PlaybackProvider):
+class TuneInPlayback(backend.PlaybackProvider):
     def __init__(self, audio, backend):
-        super(TuneinPlayback, self).__init__(audio, backend)
+        super(TuneInPlayback, self).__init__(audio, backend)
         self._scanner = scan.Scanner(min_duration=None, timeout=1000)
 
     def change_track(self, track):
@@ -121,4 +121,4 @@ class TuneinPlayback(backend.PlaybackProvider):
             uris = self.backend.tunein.parse_stream_url(uris[0])
             track = track.copy(uri=uris[0])
 
-        return super(TuneinPlayback, self).change_track(track)
+        return super(TuneInPlayback, self).change_track(track)

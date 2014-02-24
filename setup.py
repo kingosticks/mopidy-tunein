@@ -17,7 +17,7 @@ setup(
     license='Apache License, Version 2.0',
     author='Nick Steel',
     author_email='kingosticks@gmail.com',
-    description='Mopidy extension extension for playing music from Tunein.',
+    description='Mopidy extension for playing music from TuneIn.',
     long_description=open('README.rst').read(),
     packages=find_packages(exclude=['tests', 'tests.*']),
     zip_safe=False,

@@ -123,8 +123,8 @@ def find_playlist_parser(extension, content_type):
     return parser
 
 
-class Tunein(object):
-    """Wrapper for the Tunein API."""
+class TuneIn(object):
+    """Wrapper for the TuneIn API."""
 
     def __init__(self, timeout):
         self._base_uri = 'http://opml.radiotime.com/%s'
@@ -176,7 +176,7 @@ class Tunein(object):
             args = '&id=r0'  # Annoying special case
         elif category == 'language':
             args = '&c=lang'
-            return []  # Tunein's API is a mess here, cba
+            return []  # TuneIn's API is a mess here, cba
         else:
             args = '&c=' + category
 
@@ -242,7 +242,7 @@ class Tunein(object):
             return listings[0]
 
     def parse_stream_url(self, url):
-        logger.debug('Using tunein stream url parsing')
+        logger.debug('Using TuneIn stream url parsing')
         extension = urlparse.urlparse(url).path[-4:]
         if extension in ['.mp3', '.wma']:
             return [url]  # Catch these easy ones
@@ -297,7 +297,7 @@ class Tunein(object):
     @cache()
     def _tunein(self, variant, args):
         uri = (self._base_uri % variant) + '?render=json' + args
-        logger.debug('Tunein request: %s', uri)
+        logger.debug('TuneIn request: %s', uri)
         try:
             response = requests.get(uri, timeout=self._timeout)
             response.raise_for_status()
@@ -307,7 +307,7 @@ class Tunein(object):
                                                     data['head']['fault'])
             return data['body']
         except Exception as e:
-            logger.info('Tunein request failed: %s', e)
+            logger.info('TuneIn request failed: %s', e)
         return {}
 
     @cache()
@@ -326,5 +326,5 @@ class Tunein(object):
             response.close()
             return (data, content_type)
         except Exception as e:
-            logger.info('Tunein playlist request failed: %s', e)
+            logger.info('TuneIn playlist request failed: %s', e)
         return (None, None)

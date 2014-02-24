@@ -9,7 +9,7 @@ __version__ = '0.1.0'
 
 class Extension(ext.Extension):
 
-    dist_name = 'Mopidy-Tunein'
+    dist_name = 'Mopidy-TuneIn'
     ext_name = 'tunein'
     version = __version__
 
@@ -23,5 +23,5 @@ class Extension(ext.Extension):
         return schema
 
     def setup(self, registry):
-        from .actor import TuneinBackend
-        registry.add('backend', TuneinBackend)
+        from .actor import TuneInBackend
+        registry.add('backend', TuneInBackend)
