@@ -11,7 +11,7 @@ def get_version(filename):
 
 
 setup(
-    name='Mopidy-Tunein',
+    name='Mopidy-TuneIn',
     version=get_version('mopidy_tunein/__init__.py'),
     url='https://github.com/kingosticks/mopidy-tunein',
     license='Apache License, Version 2.0',
