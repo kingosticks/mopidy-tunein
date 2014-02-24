@@ -57,6 +57,11 @@ Project resources
 Changelog
 =========
 
+v0.1.1 (2014-02-24)
+----------------------------------------
+
+- Fixed package description typo and capitalisation inconsistency in name!
+
 v0.1.0 (2014-02-23)
 ----------------------------------------
 
