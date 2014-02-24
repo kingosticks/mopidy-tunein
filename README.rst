@@ -21,6 +21,9 @@ Mopidy-Tunein
 `Mopidy <http://www.mopidy.com/>`_ extension for playing music from
 `TuneIn <http://www.tunein.com>`_.
 
+Acknowledgement and thanks to Marius Wyss for his original version of this extension and Brian Hornsby's 
+`XBMC plugin <https://github.com/brianhornsby/plugin.audio.tuneinradio>`_ that was based on.
+
 
 Installation
 ============
