@@ -151,11 +151,11 @@ class TuneIn(object):
         def grab_item(item):
             if 'guide_id' not in item:
                 return
-            if item.get('type', 'link') == 'link':
-                results.append(item)
-                return
             if map_func:
                 station = map_func(item)
+            elif item.get('type', 'link') == 'link':
+                results.append(item)
+                return
             else:
                 station = item
             self._stations[station['guide_id']] = station
@@ -229,10 +229,12 @@ class TuneIn(object):
 
     def _map_listing(self, listing):
         # We've already checked 'guide_id' exists
+        url_args = 'Tune.ashx?id=%s' % listing['guide_id']
         return {'text': listing.get('name', '???'),
                 'guide_id': listing['guide_id'],
                 'type': 'audio',
-                'subtext': listing.get('slogan', '')}
+                'subtext': listing.get('slogan', ''),
+                'URL': self._base_uri % url_args}
 
     def _station_info(self, station_id):
         args = '&c=composite&detail=listing&id=' + station_id
