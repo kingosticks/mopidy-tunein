@@ -183,7 +183,8 @@ class TuneIn(object):
         # Take a copy so we don't modify the cached data
         results = list(self._tunein('Browse.ashx', args))
         if category in ('podcast', 'local'):
-            results = self._filter_results(results, '')  # Flatten the results!
+            # Flatten the results!
+            results = self._filter_results(self._flatten(results)) 
         elif category == '':
             trending = {'text': 'Trending',
                         'key': 'trending',

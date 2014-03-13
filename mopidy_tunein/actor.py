@@ -40,10 +40,10 @@ class TuneInLibrary(backend.LibraryProvider):
                 result.append(translator.category_to_ref(category))
         elif variant == "category" and identifier:
             for section in self.backend.tunein.categories(identifier):
-                result.append(translator.section_to_ref(section))
+                result.append(translator.section_to_ref(section, identifier))
         elif variant == "location" and identifier:
             for location in self.backend.tunein.locations(identifier):
-                result.append(translator.section_to_ref(location))
+                result.append(translator.section_to_ref(location, 'local'))
             for station in self.backend.tunein.stations(identifier):
                 result.append(translator.station_to_ref(station))
         elif variant == "section" and identifier:

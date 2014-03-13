@@ -57,11 +57,11 @@ def category_to_ref(category):
     return Ref.directory(uri=uri, name=category['text'])
 
 
-def section_to_ref(section):
+def section_to_ref(section, identifier=''):
     if section.get('type', 'link') == 'audio':
         return station_to_ref(section)
     guide_id = section.get('guide_id', '??')
-    if get_id_type(guide_id) == TUNEIN_ID_REGION:
+    if get_id_type(guide_id) == TUNEIN_ID_REGION or identifier == 'local':
         uri = unparse_uri('location', guide_id)
     else:
         uri = unparse_uri('section', guide_id)
