@@ -184,7 +184,7 @@ class TuneIn(object):
         results = list(self._tunein('Browse.ashx', args))
         if category in ('podcast', 'local'):
             # Flatten the results!
-            results = self._filter_results(self._flatten(results)) 
+            results = self._filter_results(self._flatten(results))
         elif category == '':
             trending = {'text': 'Trending',
                         'key': 'trending',
