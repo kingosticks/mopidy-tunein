@@ -75,7 +75,12 @@ def parse_pls(data):
         if section.lower() != 'playlist':
             continue
         for i in xrange(cp.getint(section, 'numberofentries')):
-            yield cp.get(section, 'file%d' % (i+1))
+            try:
+                # TODO: Remove this horrible hack
+                if cp.get(section, 'length%d' % (i+1)) == '-1':
+                    yield cp.get(section, 'file%d' % (i+1))
+            except configparser.NoOptionError:
+                yield cp.get(section, 'file%d' % (i+1))
 
 
 def parse_asx(data):
@@ -245,7 +250,7 @@ class TuneIn(object):
             return listings[0]
 
     def parse_stream_url(self, url):
-        logger.debug('Using TuneIn stream url parsing')
+        logger.debug('Using TuneIn extension parsing: %s', url)
         extension = urlparse.urlparse(url).path[-4:]
         if extension in ['.mp3', '.wma']:
             return [url]  # Catch these easy ones
@@ -258,6 +263,8 @@ class TuneIn(object):
                 results = [u for u in parser(playlist_data) if u is not None]
 
         if not results:
+            logger.debug('Playlist parse failure: is it malformed?')
+            logger.debug('%s', playlist);
             results = [url]
         return results
 
@@ -315,12 +322,12 @@ class TuneIn(object):
 
     @cache()
     def _get_playlist(self, uri):
-        logger.debug('Playlist request: %s', uri)
         try:
             # Defer downloading the body until know it's not a stream
             response = requests.get(uri, timeout=self._timeout, stream=True)
             response.raise_for_status()
             content_type = response.headers.get('content-type', 'audio/mpeg')
+            logger.debug('Content type: %s', content_type)
             if content_type == 'audio/mpeg':
                 logger.debug('Found streaming audio at %s' % uri)
                 data = None
