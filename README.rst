@@ -38,10 +38,10 @@ Install by running::
 .. Or, if available, install the Debian/Ubuntu package from `apt.mopidy.com
 .. <http://apt.mopidy.com/>`_.
 
-Some radio streams may require additional audio plugins e.g.:: 
-    
-    gstreamer0.10-plugins-ugly
-    gstreamer0.10-plugins-bad
+Some radio streams may require additional audio plugins, installing the following will help:
+ * `gstreamer0.10-plugins-ugly`
+ * `gstreamer0.10-plugins-bad`
+ * `gstreamer0.10-ffmpeg'
 
 
 Configuration
