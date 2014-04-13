@@ -264,7 +264,7 @@ class TuneIn(object):
 
         if not results:
             logger.debug('Playlist parse failure: is it malformed?')
-            logger.debug('%s', playlist);
+            logger.debug('%s', playlist)
             results = [url]
         return results
 
