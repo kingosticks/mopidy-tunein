@@ -114,6 +114,7 @@ class TuneInPlayback(backend.PlaybackProvider):
         if not uris:
             return False
         try:
+            logger.debug('Stream URI: %s.', uris[0])
             data = self._scanner.scan(uris[0])
             track = scan.audio_data_to_track(data)
         except exceptions.ScannerError as e:
