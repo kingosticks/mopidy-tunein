@@ -22,7 +22,10 @@ Mopidy-TuneIn
 `TuneIn <http://www.tunein.com>`_.
 
 Acknowledgement and thanks to Marius Wyss for his original version of this extension and Brian Hornsby's 
-`XBMC plugin <https://github.com/brianhornsby/plugin.audio.tuneinradio>`_ that was based on.
+`XBMC plugin <https://github.com/brianhornsby/plugin.audio.tuneinradio>`_ that was based on. 
+
+This product uses TuneIn but is not endorsed, certified or otherwise approved in any way by TuneIn. 
+TuneIn is the registered trade mark of TuneIn Inc.
 
 
 Installation
