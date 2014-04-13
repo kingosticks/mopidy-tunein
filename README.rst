@@ -65,6 +65,12 @@ Project resources
 Changelog
 =========
 
+v0.1.2 (2014-04-13)
+----------------------------------------
+
+- Improved stream selection for stations using PLS format playlists.
+- Added suggested additional gstreamer plugin packages. 
+
 v0.1.1 (2014-02-24)
 ----------------------------------------
 
