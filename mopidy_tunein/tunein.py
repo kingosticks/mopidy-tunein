@@ -85,15 +85,17 @@ def parse_pls(data):
 
 def parse_asx(data):
     # Copied from mopidy.audio.playlists
-    # Mopidy doesn't support asx: mopidy/mopidy#687
     try:
         for event, element in elementtree.iterparse(data):
             element.tag = element.tag.lower()  # normalize
     except elementtree.ParseError:
         return
 
-    for ref in element.findall('entry/ref'):
+    for ref in element.findall('entry/ref[@href]'):
         yield ref.get('href', '').strip()
+
+    for entry in element.findall('entry[@href]'):
+        yield entry.get('href', '').strip()
 
 # This is all broken: mopidy/mopidy#225
 # from gi.repository import TotemPlParser
