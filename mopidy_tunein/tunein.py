@@ -17,6 +17,10 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+class PlaylistError(Exception):
+    pass
+
+
 class cache(object):
     # TODO: merge this to util library (copied from mopidy-spotify)
 
@@ -96,6 +100,7 @@ def parse_asx(data):
 
     for entry in element.findall('entry[@href]'):
         yield entry.get('href', '').strip()
+
 
 # This is all broken: mopidy/mopidy#225
 # from gi.repository import TotemPlParser
@@ -265,9 +270,9 @@ class TuneIn(object):
                 results = [u for u in parser(playlist_data) if u is not None]
 
         if not results:
-            logger.debug('Playlist parse failure: is it malformed?')
-            logger.debug('%s', playlist)
-            results = [url]
+            raise PlaylistError('Parsing failure, possibly malformed playlist: %s' % playlist)
+        else:
+            logger.debug('TuneIn found URI: %s', results[0])
         return results
 
     def tune(self, station_id, parse_url=True):

@@ -113,13 +113,20 @@ class TuneInPlayback(backend.PlaybackProvider):
         uris = self.backend.tunein.tune(identifier, parse_url=False)
         if not uris:
             return False
-        try:
-            logger.debug('Stream URI: %s.', uris[0])
-            data = self._scanner.scan(uris[0])
-            track = scan.audio_data_to_track(data)
-        except exceptions.ScannerError as e:
-            logger.debug('Problem looking up %s: %s.', uris[0], e)
-            uris = self.backend.tunein.parse_stream_url(uris[0])
-            track = track.copy(uri=uris[0])
-
+        uri = uris[0]
+        while uri:
+            try:
+                logger.debug('Scanning URI: %s.', uri)
+                data = self._scanner.scan(uri)
+                track = scan.audio_data_to_track(data)
+                uri = None
+            except exceptions.ScannerError as se:
+                try:
+                    logger.debug('Mopidy lookup failed for %s: %s.', uri, se)
+                    uri = self.backend.tunein.parse_stream_url(uri)[0]
+                except tunein.PlaylistError as te:
+                    logger.debug('Tunein lookup failed for %s: %s.', uri, te)
+                    track = track.copy(uri=uris[0])
+                    uri = None
+        
         return super(TuneInPlayback, self).change_track(track)
