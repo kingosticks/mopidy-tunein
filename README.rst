@@ -66,18 +66,26 @@ Project resources
 Changelog
 =========
 
+v0.1.3 (UNRELEASED)
+-------------------
+
+- Improved nested playlist support.
+- Support for 'protocol rollover' style ASX playlists.
+- ASF HTTP streams in ASX playlists are converted to MMS steams.
+- Ignore nested subtypes in content-type header field to fix #5.
+
 v0.1.2 (2014-04-13)
-----------------------------------------
+-------------------
 
 - Improved stream selection for stations using PLS format playlists.
 - Added suggested additional gstreamer plugin packages. 
 
 v0.1.1 (2014-02-24)
-----------------------------------------
+-------------------
 
 - Fixed package description typo and capitalisation inconsistency in name!
 
 v0.1.0 (2014-02-23)
-----------------------------------------
+-------------------
 
 - Initial release.
