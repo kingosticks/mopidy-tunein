@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from collections import deque
 import logging
 
 import pykka
@@ -110,23 +111,24 @@ class TuneInPlayback(backend.PlaybackProvider):
         variant, identifier = translator.parse_uri(track.uri)
         if variant != 'station':
             return False
-        uris = self.backend.tunein.tune(identifier, parse_url=False)
-        if not uris:
-            return False
-        uri = uris[0]
-        while uri:
+        uris = deque(self.backend.tunein.tune(identifier, parse_url=False))
+        while uris:
+            uri = uris.popleft()
+            logger.debug('Looking up URI: %s.' % uri)
             try:
-                logger.debug('Scanning URI: %s.', uri)
-                data = self._scanner.scan(uri)
-                track = scan.audio_data_to_track(data)
-                uri = None
+                track = scan.audio_data_to_track(self._scanner.scan(uri))
+                return super(TuneInPlayback, self).change_track(track)
             except exceptions.ScannerError as se:
                 try:
-                    logger.debug('Mopidy lookup failed for %s: %s.', uri, se)
-                    uri = self.backend.tunein.parse_stream_url(uri)[0]
-                except tunein.PlaylistError as te:
-                    logger.debug('Tunein lookup failed for %s: %s.', uri, te)
-                    track = track.copy(uri=uris[0])
-                    uri = None
+                    logger.debug('Mopidy scan failed: %s.' % se)
+                    next_uris = self.backend.tunein.parse_stream_url(uri)
+                    if uri in next_uris:
+                        raise tunein.PlaylistError('Recursive playlist')
+                    next_uris.reverse() # extendleft will reverse order.
+                    uris.extendleft(next_uris)
+                except tunein.PlaylistError as pe:
+                    logger.debug('Tunein lookup failed: %s.' % pe)
+                    track = track.copy(uri=uri)
+                    return super(TuneInPlayback, self).change_track(track)
         
-        return super(TuneInPlayback, self).change_track(track)
+        return False
