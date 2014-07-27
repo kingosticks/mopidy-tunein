@@ -5,6 +5,7 @@ import logging
 import requests
 import time
 import urlparse
+import re
 try:
     import cStringIO as StringIO
 except ImportError:
@@ -86,8 +87,25 @@ def parse_pls(data):
             except configparser.NoOptionError:
                 yield cp.get(section, 'file%d' % (i+1))
 
+def fix_asf_uri(uri):
+    return re.sub(r'http://(.+\?mswmext=\.asf)', r'mms://\1', uri, re.I)
 
-def parse_asx(data):
+def parse_old_asx(data):
+    try:
+        cp = configparser.RawConfigParser()
+        cp.readfp(data)
+    except configparser.Error:
+        return
+    for section in cp.sections():
+        if section.lower() != 'reference':
+            continue
+        for option in cp.options(section):
+            if option.lower().startswith('ref'):
+                uri = cp.get(section, option).lower()
+                yield fix_asf_uri(uri)
+
+
+def parse_new_asx(data):
     # Copied from mopidy.audio.playlists
     try:
         for event, element in elementtree.iterparse(data):
@@ -96,10 +114,17 @@ def parse_asx(data):
         return
 
     for ref in element.findall('entry/ref[@href]'):
-        yield ref.get('href', '').strip()
+        yield fix_asf_uri(ref.get('href', '').strip())
 
     for entry in element.findall('entry[@href]'):
-        yield entry.get('href', '').strip()
+        yield fix_asf_uri(entry.get('href', '').strip())
+
+
+def parse_asx(data):
+    if b'asx' in data.getvalue()[0:50].lower():
+        return parse_new_asx(data)
+    else:
+        return parse_old_asx(data)
 
 
 # This is all broken: mopidy/mopidy#225
