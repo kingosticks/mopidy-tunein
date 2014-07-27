@@ -359,6 +359,7 @@ class TuneIn(object):
             response = requests.get(uri, timeout=self._timeout, stream=True)
             response.raise_for_status()
             content_type = response.headers.get('content-type', 'audio/mpeg')
+            content_type = content_type.split(';')[0]
             logger.debug('Content type: %s', content_type)
             if content_type == 'audio/mpeg':
                 logger.debug('Found streaming audio at %s' % uri)
