@@ -2,10 +2,13 @@ from __future__ import unicode_literals
 
 import ConfigParser as configparser
 import logging
-import requests
-import time
-import urlparse
 import re
+import time
+
+import urlparse
+
+import requests
+
 try:
     import cStringIO as StringIO
 except ImportError:
