@@ -1,14 +1,13 @@
 from __future__ import unicode_literals
 
 import logging
-
-import pykka
-
 from collections import deque
 
 from mopidy import backend, exceptions
 from mopidy.audio import scan
 from mopidy.models import Ref, SearchResult, Track
+
+import pykka
 
 from mopidy_tunein import translator, tunein
 
