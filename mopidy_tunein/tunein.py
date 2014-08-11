@@ -87,8 +87,10 @@ def parse_pls(data):
             except configparser.NoOptionError:
                 yield cp.get(section, 'file%d' % (i+1))
 
+
 def fix_asf_uri(uri):
     return re.sub(r'http://(.+\?mswmext=\.asf)', r'mms://\1', uri, re.I)
+
 
 def parse_old_asx(data):
     try:
@@ -295,7 +297,8 @@ class TuneIn(object):
                 results = [u for u in parser(playlist_data) if u is not None]
 
         if not results:
-            raise PlaylistError('Parsing failure, possibly malformed playlist: %s' % playlist)
+            raise PlaylistError(
+                'Parsing failure, possibly malformed playlist: %s' % playlist)
         else:
             logger.debug('TuneIn found URI: %s', results[0])
         return results

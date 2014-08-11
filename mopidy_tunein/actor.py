@@ -124,11 +124,10 @@ class TuneInPlayback(backend.PlaybackProvider):
                     next_uris = self.backend.tunein.parse_stream_url(uri)
                     if uri in next_uris:
                         raise tunein.PlaylistError('Recursive playlist')
-                    next_uris.reverse() # extendleft will reverse order.
+                    next_uris.reverse()  # extendleft will reverse order.
                     uris.extendleft(next_uris)
                 except tunein.PlaylistError as pe:
                     logger.debug('Tunein lookup failed: %s.' % pe)
                     track = track.copy(uri=uri)
                     return super(TuneInPlayback, self).change_track(track)
-        
         return False
