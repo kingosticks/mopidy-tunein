@@ -330,6 +330,9 @@ class TuneIn(object):
 
     def search(self, query):
         # "Search.ashx?query=" + query + filterVal
+        if not query:
+            logger.debug('Empty search query')
+            return []
         logger.debug('Searching for "%s"' % query)
         args = '&query=' + query
         search_results = self._tunein('Search.ashx', args)
