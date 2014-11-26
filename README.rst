@@ -69,6 +69,7 @@ Changelog
 v0.1.3 (UNRELEASED)
 -------------------
 
+- Don't submit a search (and receieve an error) when the query is empty.
 - Improved nested playlist support.
 - Support for 'protocol rollover' style ASX playlists.
 - ASF HTTP streams in ASX playlists are converted to MMS steams.
