@@ -1,13 +1,14 @@
 from __future__ import unicode_literals
 
 import logging
+
+import pykka
+
 from collections import deque
 
 from mopidy import backend, exceptions
 from mopidy.audio import scan
 from mopidy.models import Ref, SearchResult, Track
-
-import pykka
 
 from mopidy_tunein import translator, tunein
 
@@ -20,10 +21,11 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
         super(TuneInBackend, self).__init__()
         self.tunein = tunein.TuneIn(config['tunein']['timeout'])
-        self.library = TuneInLibrary(
-            backend=self, timeout=config['tunein']['timeout'])
-        self.playback = TuneInPlayback(audio=audio, backend=self,
-            timeout=config['tunein']['timeout'])
+        self.library = TuneInLibrary(backend=self,
+                                     timeout=config['tunein']['timeout'])
+        self.playback = TuneInPlayback(audio=audio,
+                                       backend=self,
+                                       timeout=config['tunein']['timeout'])
 
 
 class TuneInLibrary(backend.LibraryProvider):
