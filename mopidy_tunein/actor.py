@@ -22,7 +22,8 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
         self.tunein = tunein.TuneIn(config['tunein']['timeout'])
         self.library = TuneInLibrary(
             backend=self, timeout=config['tunein']['timeout'])
-        self.playback = TuneInPlayback(audio=audio, backend=self)
+        self.playback = TuneInPlayback(audio=audio, backend=self,
+            timeout=config['tunein']['timeout'])
 
 
 class TuneInLibrary(backend.LibraryProvider):
@@ -103,9 +104,9 @@ class TuneInLibrary(backend.LibraryProvider):
 
 
 class TuneInPlayback(backend.PlaybackProvider):
-    def __init__(self, audio, backend):
+    def __init__(self, audio, backend, timeout):
         super(TuneInPlayback, self).__init__(audio, backend)
-        self._scanner = scan.Scanner(min_duration=None, timeout=1000)
+        self._scanner = scan.Scanner(min_duration=None, timeout=timeout)
 
     def change_track(self, track):
         variant, identifier = translator.parse_uri(track.uri)
