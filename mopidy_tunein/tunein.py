@@ -287,7 +287,7 @@ class TuneIn(object):
             return listings[0]
 
     def parse_stream_url(self, url):
-        logger.debug('Using TuneIn extension parsing: %s', url)
+        logger.debug('Extracting URIs from %s', url)
         extension = urlparse.urlparse(url).path[-4:]
         if extension in ['.mp3', '.wma']:
             return [url]  # Catch these easy ones
@@ -333,7 +333,7 @@ class TuneIn(object):
         if not query:
             logger.debug('Empty search query')
             return []
-        logger.debug('Searching for "%s"' % query)
+        logger.debug('Searching TuneIn for "%s"' % query)
         args = '&query=' + query
         search_results = self._tunein('Search.ashx', args)
         results = []
@@ -369,7 +369,7 @@ class TuneIn(object):
             response.raise_for_status()
             content_type = response.headers.get('content-type', 'audio/mpeg')
             content_type = content_type.split(';')[0]
-            logger.debug('Content type: %s', content_type)
+            logger.debug('%s has content type: %s' % (uri, content_type))
             if content_type == 'audio/mpeg':
                 logger.debug('Found streaming audio at %s' % uri)
                 data = None
