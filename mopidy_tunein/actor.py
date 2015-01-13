@@ -108,7 +108,14 @@ class TuneInLibrary(backend.LibraryProvider):
         tracks = []
         for station in self.backend.tunein.search(tunein_query):
             ref = translator.station_to_ref(station)
-            tracks.append(Track(uri=ref.uri, name=ref.name))
+            tracks.append(Track(
+                uri=ref.uri,
+                name=ref.name,
+                album=Album(
+                    name=' ',
+                    images=[station.get('image')]
+                ),
+            ))
         return SearchResult(uri='tunein:search', tracks=tracks)
 
 
