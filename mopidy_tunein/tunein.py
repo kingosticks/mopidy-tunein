@@ -298,12 +298,15 @@ class TuneIn(object):
             if parser:
                 playlist_data = StringIO.StringIO(playlist)
                 results = [u for u in parser(playlist_data) if u is not None]
+        elif content_type:
+            results = [url]
 
-        if not results:
-            raise PlaylistError(
-                'Parsing failure, possibly malformed playlist: %s' % playlist)
+        if results:
+            logger.debug('Got %s', results[0])
         else:
-            logger.debug('TuneIn found URI: %s', results[0])
+            raise PlaylistError(
+                'Parsing failure, malformed playlist: %s' % playlist)
+
         return results
 
     def tune(self, station_id, parse_url=True):
