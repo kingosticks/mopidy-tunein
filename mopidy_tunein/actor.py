@@ -2,13 +2,13 @@ from __future__ import unicode_literals
 
 import logging
 
-import pykka
-
 from collections import deque
 
 from mopidy import backend, exceptions
 from mopidy.audio import scan
 from mopidy.models import Ref, SearchResult, Track
+
+import pykka
 
 from mopidy_tunein import translator, tunein
 
@@ -110,6 +110,10 @@ class TuneInPlayback(backend.PlaybackProvider):
         super(TuneInPlayback, self).__init__(audio, backend)
         self._scanner = scan.Scanner(min_duration=None, timeout=timeout)
 
+    def play(self, track):
+        self.audio.prepare_change()
+        return self.change_track(track) and self.audio.start_playback().get()
+
     def change_track(self, track):
         variant, identifier = translator.parse_uri(track.uri)
         if variant != 'station':
@@ -131,6 +135,5 @@ class TuneInPlayback(backend.PlaybackProvider):
                     uris.extendleft(next_uris)
                 except tunein.PlaylistError as pe:
                     logger.debug('Tunein lookup failed: %s.' % pe)
-                    track = track.copy(uri=uri)
-                    return super(TuneInPlayback, self).change_track(track)
+                    break
         return False
