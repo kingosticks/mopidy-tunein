@@ -1,13 +1,12 @@
 from __future__ import unicode_literals
 
 import ConfigParser as configparser
+
 import logging
 import re
 import time
-
 import urlparse
-
-import requests
+from contextlib import closing
 
 try:
     import cStringIO as StringIO
@@ -17,6 +16,8 @@ try:
     import xml.etree.cElementTree as elementtree
 except ImportError:
     import xml.etree.ElementTree as elementtree
+
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -298,15 +299,12 @@ class TuneIn(object):
             if parser:
                 playlist_data = StringIO.StringIO(playlist)
                 results = [u for u in parser(playlist_data) if u is not None]
+            if not results:
+                logger.debug('Parsing failure, malformed playlist: %s' %
+                             playlist)
         elif content_type:
             results = [url]
-
-        if results:
-            logger.debug('Got %s', results[0])
-        else:
-            raise PlaylistError(
-                'Parsing failure, malformed playlist: %s' % playlist)
-
+        logger.debug('Got %s', results)
         return results
 
     def tune(self, station_id, parse_url=True):
@@ -366,20 +364,17 @@ class TuneIn(object):
 
     @cache()
     def _get_playlist(self, uri):
+        data, content_type = None, None
         try:
             # Defer downloading the body until know it's not a stream
-            response = requests.get(uri, timeout=self._timeout, stream=True)
-            response.raise_for_status()
-            content_type = response.headers.get('content-type', 'audio/mpeg')
-            content_type = content_type.split(';')[0]
-            logger.debug('%s has content type: %s' % (uri, content_type))
-            if content_type == 'audio/mpeg':
-                logger.debug('Found streaming audio at %s' % uri)
-                data = None
-            else:
-                data = response.content.decode('utf-8', errors='ignore')
-            response.close()
-            return (data, content_type)
+            with closing(requests.get(uri,
+                                      timeout=self._timeout,
+                                      stream=True)) as r:
+                r.raise_for_status()
+                content_type = r.headers.get('content-type', 'audio/mpeg')
+                logger.debug('%s has content-type: %s' % (uri, content_type))
+                if content_type != 'audio/mpeg':
+                    data = r.content.decode('utf-8', errors='ignore')
         except Exception as e:
-            logger.info('TuneIn playlist request failed: %s', e)
-        return (None, None)
+            logger.info('TuneIn playlist request for %s failed %s' % (uri, e))
+        return (data, content_type)
