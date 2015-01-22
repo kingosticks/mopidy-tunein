@@ -85,7 +85,7 @@ v0.1.3 (2014-01-22)
 - Added support for a station's logo.
 - Include currently playing info.
 - Unplayable streams now correctly recognised by Mopidy and playback fails
-rather than continuing to play the previous track.
+  rather than continuing to play the previous track.
 
 v0.1.2 (2014-04-13)
 -------------------
