@@ -127,7 +127,7 @@ def parse_new_asx(data):
 
 
 def parse_asx(data):
-    if b'asx' in data.getvalue()[0:50].lower():
+    if 'asx' in data.getvalue()[0:50].lower():
         return parse_new_asx(data)
     else:
         return parse_old_asx(data)
@@ -151,6 +151,7 @@ def parse_asx(data):
 
 def find_playlist_parser(extension, content_type):
     extension_map = {'.asx': parse_asx,
+                     '.wax': parse_asx,
                      '.m3u': parse_m3u,
                      '.pls': parse_pls}
     content_type_map = {'video/x-ms-asf': parse_asx,
