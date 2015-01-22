@@ -45,6 +45,14 @@ Some radio streams may require additional audio plugins. These can be found in t
  * `gstreamer0.10-ffmpeg`
 
 
+Known issues
+============
+
+The following functionality is not yet implemented:
+ * Playback of podcasts/shows.
+ * User login and access to saved stations.
+
+
 Configuration
 =============
 
@@ -69,11 +77,15 @@ Changelog
 v0.1.3 (UNRELEASED)
 -------------------
 
-- Don't submit a search (and receieve an error) when the query is empty.
+- Don't submit a search (and receive an error) when the query is empty.
 - Improved nested playlist support.
 - Support for 'protocol rollover' style ASX playlists.
 - ASF HTTP streams in ASX playlists are converted to MMS steams.
 - Ignore nested subtypes in content-type header field to fix #5.
+- Added support for a station's logo.
+- Include currently playing info.
+- Unplayable streams now correctly recognised by Mopidy and playback fails
+rather than continuing to play the previous track.
 
 v0.1.2 (2014-04-13)
 -------------------
