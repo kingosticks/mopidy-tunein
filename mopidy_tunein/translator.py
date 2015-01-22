@@ -4,7 +4,7 @@ import logging
 import re
 import urllib
 
-from mopidy.models import Ref, Track, Album, Artist
+from mopidy.models import Album, Artist, Ref, Track
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +53,7 @@ def station_to_track(station):
                              images=[station.get('image')]),
                  artists=[Artist(name=station.get('subtext', ''))])
 
+
 def show_to_ref(show):
     if show['item'] != 'show':
         logger.debug('Expecting show but got %s' % show['item'])
@@ -75,7 +76,7 @@ def section_to_ref(section, identifier=''):
     else:
         uri = unparse_uri('section', guide_id)
     return Ref.directory(uri=uri, name=section['text'])
-    
+
 
 def get_id_type(guide_id):
     return {'p': TUNEIN_ID_PROGRAM,
