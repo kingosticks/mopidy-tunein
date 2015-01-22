@@ -282,6 +282,7 @@ class TuneIn(object):
                 'URL': self._base_uri % url_args}
 
     def _station_info(self, station_id):
+        logger.debug('Fetching info for station %s' % station_id)
         args = '&c=composite&detail=listing&id=' + station_id
         results = self._tunein('Describe.ashx', args)
         listings = self._filter_results(results, 'Listing', self._map_listing)
@@ -308,9 +309,9 @@ class TuneIn(object):
         logger.debug('Got %s', results)
         return results
 
-    def tune(self, station_id, parse_url=True):
-        logger.debug('Tuning station id %s' % station_id)
-        args = '&id=' + station_id
+    def tune(self, station, parse_url=True):
+        logger.debug('Tuning station id %s' % station['guide_id'])
+        args = '&id=' + station['guide_id']
         for stream in self._tunein('Tune.ashx', args):
             if 'url' in stream:
                 # TODO Cache these playable stream urls?
@@ -319,7 +320,7 @@ class TuneIn(object):
                 else:
                     return [stream['url']]
 
-        logger.error('Failed to tune station id %s' % station_id)
+        logger.error('Failed to tune station id %s' % station['guide_id'])
         return []
 
     def station(self, station_id):

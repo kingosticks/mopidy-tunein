@@ -116,14 +116,16 @@ class TuneInPlayback(backend.PlaybackProvider):
 
     def change_track(self, track):
         variant, identifier = translator.parse_uri(track.uri)
-        if variant != 'station':
+        station = self.backend.tunein.station(identifier)
+        if not station:
             return False
-        uris = deque(self.backend.tunein.tune(identifier, parse_url=False))
+        uris = deque(self.backend.tunein.tune(station, parse_url=False))
         while uris:
             uri = uris.popleft()
             logger.debug('Looking up URI: %s.' % uri)
             try:
                 track = scan.audio_data_to_track(self._scanner.scan(uri))
+                # TODO: Somehow update metadata using station.
                 return super(TuneInPlayback, self).change_track(track)
             except exceptions.ScannerError as se:
                 try:

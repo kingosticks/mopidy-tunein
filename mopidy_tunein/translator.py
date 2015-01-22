@@ -4,7 +4,7 @@ import logging
 import re
 import urllib
 
-from mopidy.models import Ref, Track, Album
+from mopidy.models import Ref, Track, Album, Artist
 
 logger = logging.getLogger(__name__)
 
@@ -48,8 +48,10 @@ def station_to_track(station):
     ref = station_to_ref(station)
     return Track(uri=ref.uri,
                  name=ref.name,
-                 album=Album(name=' ',
-                             images=[station.get('image')]))
+                 album=Album(name=ref.name,
+                             uri=ref.uri,
+                             images=[station.get('image')]),
+                 artists=[Artist(name=station.get('subtext', ''))])
 
 def show_to_ref(show):
     if show['item'] != 'show':
