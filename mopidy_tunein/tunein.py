@@ -277,6 +277,7 @@ class TuneIn(object):
         return {'text': listing.get('name', '???'),
                 'guide_id': listing['guide_id'],
                 'type': 'audio',
+                'image': listing.get('logo', ''),
                 'subtext': listing.get('slogan', ''),
                 'URL': self._base_uri % url_args}
 
