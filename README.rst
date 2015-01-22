@@ -84,8 +84,7 @@ v0.1.3 (2014-01-22)
 - Ignore nested subtypes in content-type header field to fix #5.
 - Added support for a station's logo.
 - Include currently playing info.
-- Unplayable streams now correctly recognised by Mopidy and playback fails
-  rather than continuing to play the previous track.
+- Unplayable streams now correctly recognised by Mopidy and playback fails rather than continuing to play the previous track.
 
 v0.1.2 (2014-04-13)
 -------------------
