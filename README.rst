@@ -74,7 +74,7 @@ Project resources
 Changelog
 =========
 
-v0.1.3 (UNRELEASED)
+v0.1.3 (2014-01-22)
 -------------------
 
 - Don't submit a search (and receive an error) when the query is empty.
