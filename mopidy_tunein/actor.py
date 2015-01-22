@@ -6,7 +6,7 @@ from collections import deque
 
 from mopidy import backend, exceptions
 from mopidy.audio import scan
-from mopidy.models import Ref, SearchResult, Track
+from mopidy.models import Ref, SearchResult, Track, Album
 
 import pykka
 
@@ -89,7 +89,14 @@ class TuneInLibrary(backend.LibraryProvider):
             return []
 
         ref = translator.station_to_ref(station)
-        return [Track(uri=ref.uri, name=ref.name)]
+        return [Track(
+            uri=ref.uri,
+            name=ref.name,
+            album=Album(
+                name=' ',
+                images=[station.get('image')]
+            ),
+        )]
 
     def find_exact(self, query=None, uris=None):
         return self.search(query=query, uris=uris)
@@ -101,7 +108,14 @@ class TuneInLibrary(backend.LibraryProvider):
         tracks = []
         for station in self.backend.tunein.search(tunein_query):
             ref = translator.station_to_ref(station)
-            tracks.append(Track(uri=ref.uri, name=ref.name))
+            tracks.append(Track(
+                uri=ref.uri,
+                name=ref.name,
+                album=Album(
+                    name=' ',
+                    images=[station.get('image')]
+                ),
+            ))
         return SearchResult(uri='tunein:search', tracks=tracks)
 
 
