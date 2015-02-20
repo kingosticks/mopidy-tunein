@@ -99,4 +99,5 @@ def mopidy_to_tunein_query(mopidy_query):
         for value in values:
             if field == 'any':
                 tunein_query.append(value)
-    return urllib.pathname2url(' '.join(tunein_query).encode(TUNEIN_API_ENCODING))
+    query = ' '.join(tunein_query).encode(TUNEIN_API_ENCODING)
+    return urllib.pathname2url(query)
