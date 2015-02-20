@@ -8,6 +8,7 @@ from mopidy.models import Album, Artist, Ref, Track
 
 logger = logging.getLogger(__name__)
 
+TUNEIN_API_ENCODING = 'utf-8'
 
 TUNEIN_ID_PROGRAM = 'program'
 TUNEIN_ID_STATION = 'station'
@@ -98,4 +99,4 @@ def mopidy_to_tunein_query(mopidy_query):
         for value in values:
             if field == 'any':
                 tunein_query.append(value)
-    return urllib.pathname2url(' '.join(tunein_query))
+    return urllib.pathname2url(' '.join(tunein_query).encode(TUNEIN_API_ENCODING))
