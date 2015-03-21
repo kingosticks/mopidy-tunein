@@ -313,12 +313,13 @@ class TuneIn(object):
     def tune(self, station):
         logger.debug('Tuning station id %s' % station['guide_id'])
         args = '&id=' + station['guide_id']
+        stream_uris = []
         for stream in self._tunein('Tune.ashx', args):
             if 'url' in stream:
-                return [stream['url']]
-
-        logger.error('Failed to tune station id %s' % station['guide_id'])
-        return []
+                stream_uris.append(stream['url'])
+        if not stream_uris:
+            logger.error('Failed to tune station id %s' % station['guide_id'])
+        return stream_uris
 
     def station(self, station_id):
         if station_id in self._stations:
