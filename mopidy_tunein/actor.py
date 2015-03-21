@@ -113,7 +113,7 @@ class TuneInPlayback(backend.PlaybackProvider):
         station = self.backend.tunein.station(identifier)
         if not station:
             return False
-        uris = deque(self.backend.tunein.tune(station, parse_url=False))
+        uris = deque(self.backend.tunein.tune(station))
         while uris:
             uri = uris.popleft()
             logger.debug('Looking up URI: %s.' % uri)

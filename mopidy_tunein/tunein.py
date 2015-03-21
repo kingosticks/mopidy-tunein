@@ -310,16 +310,12 @@ class TuneIn(object):
         logger.debug('Got %s', results)
         return results
 
-    def tune(self, station, parse_url=True):
+    def tune(self, station):
         logger.debug('Tuning station id %s' % station['guide_id'])
         args = '&id=' + station['guide_id']
         for stream in self._tunein('Tune.ashx', args):
             if 'url' in stream:
-                # TODO Cache these playable stream urls?
-                if parse_url:
-                    return self.parse_stream_url(stream['url'])
-                else:
-                    return [stream['url']]
+                return [stream['url']]
 
         logger.error('Failed to tune station id %s' % station['guide_id'])
         return []
