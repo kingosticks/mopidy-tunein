@@ -21,8 +21,7 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config, audio):
         super(TuneInBackend, self).__init__()
         self.tunein = tunein.TuneIn(config['tunein']['timeout'])
-        self.library = TuneInLibrary(backend=self,
-                                     timeout=config['tunein']['timeout'])
+        self.library = TuneInLibrary(self)
         self.playback = TuneInPlayback(audio=audio,
                                        backend=self,
                                        timeout=config['tunein']['timeout'])
@@ -31,9 +30,8 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
 class TuneInLibrary(backend.LibraryProvider):
     root_directory = Ref.directory(uri='tunein:root', name='TuneIn')
 
-    def __init__(self, backend, timeout):
+    def __init__(self, backend):
         super(TuneInLibrary, self).__init__(backend)
-        self._scanner = scan.Scanner(min_duration=None, timeout=timeout)
 
     def browse(self, uri):
         result = []
@@ -108,11 +106,7 @@ class TuneInLibrary(backend.LibraryProvider):
 class TuneInPlayback(backend.PlaybackProvider):
     def __init__(self, audio, backend, timeout):
         super(TuneInPlayback, self).__init__(audio, backend)
-        self._scanner = scan.Scanner(min_duration=None, timeout=timeout)
-
-    def play(self, track):
-        self.audio.prepare_change()
-        return self.change_track(track) and self.audio.start_playback().get()
+        self._scanner = scan.Scanner(timeout=timeout)
 
     def change_track(self, track):
         variant, identifier = translator.parse_uri(track.uri)
@@ -124,7 +118,7 @@ class TuneInPlayback(backend.PlaybackProvider):
             uri = uris.popleft()
             logger.debug('Looking up URI: %s.' % uri)
             try:
-                track = scan.audio_data_to_track(self._scanner.scan(uri))
+                track = track.copy(uri=self._scanner.scan(uri).uri)
                 # TODO: Somehow update metadata using station.
                 return super(TuneInPlayback, self).change_track(track)
             except exceptions.ScannerError as se:
