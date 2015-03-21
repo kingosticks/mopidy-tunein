@@ -2,8 +2,6 @@ from __future__ import unicode_literals
 
 import logging
 
-from collections import deque
-
 from mopidy import backend, exceptions
 from mopidy.audio import scan
 from mopidy.models import Ref, SearchResult
@@ -113,9 +111,9 @@ class TuneInPlayback(backend.PlaybackProvider):
         station = self.backend.tunein.station(identifier)
         if not station:
             return False
-        uris = deque(self.backend.tunein.tune(station))
+        uris = self.backend.tunein.tune(station)
         while uris:
-            uri = uris.popleft()
+            uri = uris.pop(0)
             logger.debug('Looking up URI: %s.' % uri)
             try:
                 track = track.copy(uri=self._scanner.scan(uri).uri)
@@ -126,10 +124,9 @@ class TuneInPlayback(backend.PlaybackProvider):
                     logger.debug('Mopidy scan failed: %s.' % se)
                     next_uris = self.backend.tunein.parse_stream_url(uri)
                     if uri in next_uris:
-                        raise tunein.PlaylistError('Recursive playlist')
-                    next_uris.reverse()  # extendleft will reverse order.
-                    uris.extendleft(next_uris)
+                        next_uris.remove(uri)
+                    uris.extend(next_uris)
                 except tunein.PlaylistError as pe:
-                    logger.debug('Tunein lookup failed: %s.' % pe)
                     break
+        logger.debug('Tunein lookup failed: %s.' % pe)
         return False

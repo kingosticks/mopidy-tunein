@@ -6,6 +6,7 @@ import logging
 import re
 import time
 import urlparse
+from collections import OrderedDict
 from contextlib import closing
 
 try:
@@ -308,7 +309,7 @@ class TuneIn(object):
         elif content_type:
             results = [url]
         logger.debug('Got %s', results)
-        return results
+        return list(OrderedDict.fromkeys(results))
 
     def tune(self, station):
         logger.debug('Tuning station id %s' % station['guide_id'])
@@ -319,7 +320,7 @@ class TuneIn(object):
                 stream_uris.append(stream['url'])
         if not stream_uris:
             logger.error('Failed to tune station id %s' % station['guide_id'])
-        return stream_uris
+        return list(OrderedDict.fromkeys(stream_uris))
 
     def station(self, station_id):
         if station_id in self._stations:
