@@ -78,6 +78,8 @@ v0.1.4 (UNRELEASED)
 -------------------
 
 - Fix utf-8 encoding for searches. (PR: #15)
+- Requires Mopidy v1.0
+- Fixed inaccessible stream URIs identified as recursive playlist and not using the remaining stream URIs.
 
 v0.1.3 (2014-01-22)
 -------------------
