@@ -106,19 +106,18 @@ class TuneInPlayback(backend.PlaybackProvider):
         super(TuneInPlayback, self).__init__(audio, backend)
         self._scanner = scan.Scanner(timeout=timeout)
 
-    def change_track(self, track):
-        variant, identifier = translator.parse_uri(track.uri)
+    def translate_uri(self, uri):
+        variant, identifier = translator.parse_uri(uri)
         station = self.backend.tunein.station(identifier)
         if not station:
-            return False
+            return None
         uris = self.backend.tunein.tune(station)
         while uris:
             uri = uris.pop(0)
             logger.debug('Looking up URI: %s.' % uri)
             try:
-                track = track.copy(uri=self._scanner.scan(uri).uri)
                 # TODO: Somehow update metadata using station.
-                return super(TuneInPlayback, self).change_track(track)
+                return self._scanner.scan(uri).uri
             except exceptions.ScannerError as se:
                 try:
                     logger.debug('Mopidy scan failed: %s.' % se)
@@ -129,4 +128,4 @@ class TuneInPlayback(backend.PlaybackProvider):
                 except tunein.PlaylistError as pe:
                     break
         logger.debug('Tunein lookup failed: %s.' % pe)
-        return False
+        return None
