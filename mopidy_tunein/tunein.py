@@ -173,6 +173,7 @@ class TuneIn(object):
 
     def __init__(self, timeout):
         self._base_uri = 'http://opml.radiotime.com/%s'
+        self._session = requests.Session()
         self._timeout = timeout / 1000.0
         self._stations = {}
 
@@ -352,15 +353,11 @@ class TuneIn(object):
         uri = (self._base_uri % variant) + '?render=json' + args
         logger.debug('TuneIn request: %s', uri)
         try:
-            response = requests.get(uri, timeout=self._timeout)
-            response.raise_for_status()
-            data = response.json()
-            if (data['head']['status'] != '200'):
-                raise requests.exceptions.HTTPError(data['head']['status'],
-                                                    data['head']['fault'])
-            return data['body']
+            with closing(self._session.get(uri, timeout=self._timeout)) as r:
+                r.raise_for_status()
+                return r.json()['body']
         except Exception as e:
-            logger.info('TuneIn request failed: %s', e)
+            logger.info('TuneIn API request for %s failed: %s' % (variant, e))
         return {}
 
     @cache()
@@ -368,14 +365,14 @@ class TuneIn(object):
         data, content_type = None, None
         try:
             # Defer downloading the body until know it's not a stream
-            with closing(requests.get(uri,
-                                      timeout=self._timeout,
-                                      stream=True)) as r:
+            with closing(self._session.get(uri,
+                                           timeout=self._timeout,
+                                           stream=True)) as r:
                 r.raise_for_status()
                 content_type = r.headers.get('content-type', 'audio/mpeg')
                 logger.debug('%s has content-type: %s' % (uri, content_type))
                 if content_type != 'audio/mpeg':
                     data = r.content.decode('utf-8', errors='ignore')
         except Exception as e:
-            logger.info('TuneIn playlist request for %s failed %s' % (uri, e))
+            logger.info('TuneIn playlist request for %s failed: %s' % (uri, e))
         return (data, content_type)
