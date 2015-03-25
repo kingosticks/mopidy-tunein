@@ -6,6 +6,9 @@ import logging
 import re
 import time
 import urlparse
+
+import requests
+
 from collections import OrderedDict
 from contextlib import closing
 
@@ -18,7 +21,6 @@ try:
 except ImportError:
     import xml.etree.ElementTree as elementtree
 
-import requests
 
 logger = logging.getLogger(__name__)
 
