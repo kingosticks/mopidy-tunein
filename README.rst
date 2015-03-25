@@ -74,12 +74,14 @@ Project resources
 Changelog
 =========
 
-v0.1.4 (UNRELEASED)
+v0.2 (UNRELEASED)
 -------------------
 
 - Fix utf-8 encoding for searches. (PR: #15)
-- Requires Mopidy v1.0
 - Fixed inaccessible stream URIs identified as recursive playlist and not using the remaining stream URIs.
+- Update to work with new playback API in Mopidy 1.0.
+- Update to work with new backend search API in Mopidy 1.0.
+- Requires Mopidy v1.0.
 
 v0.1.3 (2014-01-22)
 -------------------
