@@ -87,10 +87,7 @@ class TuneInLibrary(backend.LibraryProvider):
         track = translator.station_to_track(station)
         return [track]
 
-    def find_exact(self, query=None, uris=None):
-        return self.search(query=query, uris=uris)
-
-    def search(self, query=None, uris=None):
+    def search(self, query=None, uris=None, exact=False):
         if query is None or not query:
             return
         tunein_query = translator.mopidy_to_tunein_query(query)
