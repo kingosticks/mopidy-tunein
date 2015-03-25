@@ -119,10 +119,11 @@ class TuneInPlayback(backend.PlaybackProvider):
                 try:
                     logger.debug('Mopidy scan failed: %s.' % se)
                     next_uris = self.backend.tunein.parse_stream_url(uri)
-                    if uri in next_uris:
-                        next_uris.remove(uri)
+                    if next_uris == uri and len(uris) == 0:
+                        logger.debug('Attempt to play stream anyway %s.' % uri)
+                        return uri
                     uris.extend(next_uris)
                 except tunein.PlaylistError as pe:
                     break
-        logger.debug('Tunein lookup failed: %s.' % pe)
+        logger.debug('TuneIn lookup failed: %s.' % pe)
         return None
