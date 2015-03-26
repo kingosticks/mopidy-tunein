@@ -7,10 +7,10 @@ import re
 import time
 import urlparse
 
-import requests
-
 from collections import OrderedDict
 from contextlib import closing
+
+import requests
 
 try:
     import cStringIO as StringIO
