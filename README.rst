@@ -74,7 +74,7 @@ Project resources
 Changelog
 =========
 
-v0.2 (UNRELEASED)
+v0.2 (2015-03-26)
 -------------------
 
 - Fix utf-8 encoding for searches. (PR: #15)
