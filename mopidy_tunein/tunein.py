@@ -305,13 +305,11 @@ class TuneIn(object):
             parser = find_playlist_parser(extension, content_type)
             if parser:
                 playlist_data = StringIO.StringIO(playlist)
-                results = [u for u in parser(playlist_data) if u]
-            if url in results:
-                results.remove(url)
-                logger.debug('Removed recursive playlist entry')
-            if not results:
-                logger.debug('Parsing failure, malformed playlist: %s' %
-                             playlist)
+                results = [u for u in parser(playlist_data)
+                           if u and u != url]
+                if not results:
+                    logger.debug('Parsing failure, '
+                                 'malformed playlist: %s' % playlist)
         elif content_type:
             results = [url]
         logger.debug('Got %s', results)
