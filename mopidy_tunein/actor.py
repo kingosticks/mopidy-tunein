@@ -116,17 +116,13 @@ class TuneInPlayback(backend.PlaybackProvider):
                 # TODO: Somehow update metadata using station.
                 return self._scanner.scan(uri).uri
             except exceptions.ScannerError as se:
-                try:
-                    logger.debug('Mopidy scan failed: %s.' % se)
-                    next_uris = self.backend.tunein.parse_stream_url(uri)
-                    if len(next_uris) > 0:
-                        if next_uris[0] == uri:
-                            logger.debug(
-                                'Attempt to play stream anyway %s.' % uri)
-                            return uri
-                        uris.extend(next_uris)
-                except tunein.PlaylistError as pe:
-                    logger.debug('TuneIn lookup failed: %s.' % pe)
-                    break
+                logger.debug('Mopidy scan failed: %s.' % se)
+                next_uris = self.backend.tunein.parse_stream_url(uri)
+                if len(next_uris) > 0:
+                    if next_uris[0] == uri:
+                        logger.debug(
+                            'Attempt to play stream anyway %s.' % uri)
+                        return uri
+                    uris.extend(next_uris)
         logger.debug('TuneIn lookup failed.')
         return None
