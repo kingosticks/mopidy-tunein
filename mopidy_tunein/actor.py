@@ -108,21 +108,20 @@ class TuneInPlayback(backend.PlaybackProvider):
         station = self.backend.tunein.station(identifier)
         if not station:
             return None
-        uris = self.backend.tunein.tune(station)
-        while uris:
-            uri = uris.pop(0)
+        stream_uris = self.backend.tunein.tune(station)
+        while stream_uris:
+            uri = stream_uris.pop(0)
             logger.debug('Looking up URI: %s.' % uri)
             try:
                 # TODO: Somehow update metadata using station.
                 return self._scanner.scan(uri).uri
             except exceptions.ScannerError as se:
                 logger.debug('Mopidy scan failed: %s.' % se)
-                next_uris = self.backend.tunein.parse_stream_url(uri)
-                if len(next_uris) > 0:
-                    if next_uris[0] == uri:
-                        logger.debug(
-                            'Attempt to play stream anyway %s.' % uri)
-                        return uri
-                    uris.extend(next_uris)
+                new_uris = self.backend.tunein.parse_stream_url(uri)
+                if uri in new_uris and not stream_uris:
+                    logger.debug(
+                        'Last attempt, play stream anyway: %s.' % uri)
+                    return uri
+                stream_uris.extend(new_uris)
         logger.debug('TuneIn lookup failed.')
         return None
