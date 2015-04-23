@@ -74,6 +74,11 @@ Project resources
 Changelog
 =========
 
+v0.2.2 (2015-04-24)
+-------------------
+
+- Fix infinite loop when adding some stations, again (my bad).
+
 v0.2.1 (2015-04-24)
 -------------------
 

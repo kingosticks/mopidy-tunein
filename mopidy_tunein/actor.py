@@ -118,7 +118,7 @@ class TuneInPlayback(backend.PlaybackProvider):
             except exceptions.ScannerError as se:
                 logger.debug('Mopidy scan failed: %s.' % se)
                 new_uris = self.backend.tunein.parse_stream_url(uri)
-                if uri in new_uris and not stream_uris:
+                if new_uris == [uri]:
                     logger.debug(
                         'Last attempt, play stream anyway: %s.' % uri)
                     return uri
