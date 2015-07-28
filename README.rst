@@ -74,6 +74,12 @@ Project resources
 Changelog
 =========
 
+v0.2.3 (UNRELEASED)
+-------------------
+
+- Requires Mopidy v1.1
+- Respect user's Mopidy proxy configuration and set user-agent.
+
 v0.2.2 (2015-04-24)
 -------------------
 
