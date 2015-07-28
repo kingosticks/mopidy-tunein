@@ -173,9 +173,9 @@ def find_playlist_parser(extension, content_type):
 class TuneIn(object):
     """Wrapper for the TuneIn API."""
 
-    def __init__(self, timeout):
+    def __init__(self, timeout, session=None):
         self._base_uri = 'http://opml.radiotime.com/%s'
-        self._session = requests.Session()
+        self._session = session or requests.Session()
         self._timeout = timeout / 1000.0
         self._stations = {}
 
