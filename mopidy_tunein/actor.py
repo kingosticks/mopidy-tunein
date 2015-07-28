@@ -2,15 +2,29 @@ from __future__ import unicode_literals
 
 import logging
 
-from mopidy import backend, exceptions
+from mopidy import backend, exceptions, httpclient
 from mopidy.audio import scan
 from mopidy.models import Ref, SearchResult
 
 import pykka
 
+import requests
+
+import mopidy_tunein
 from mopidy_tunein import translator, tunein
 
 logger = logging.getLogger(__name__)
+
+
+def get_requests_session(proxy_config, user_agent):
+    proxy = httpclient.format_proxy(proxy_config)
+    full_user_agent = httpclient.format_user_agent(user_agent)
+
+    session = requests.Session()
+    session.proxies.update({'http': proxy, 'https': proxy})
+    session.headers.update({'user-agent': full_user_agent})
+
+    return session
 
 
 class TuneInBackend(pykka.ThreadingActor, backend.Backend):
@@ -18,7 +32,14 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
 
     def __init__(self, config, audio):
         super(TuneInBackend, self).__init__()
-        self.tunein = tunein.TuneIn(config['tunein']['timeout'])
+
+        session = get_requests_session(
+            proxy_config=config['proxy'],
+            user_agent='%s/%s' % (
+                mopidy_tunein.Extension.dist_name,
+                mopidy_tunein.__version__))
+
+        self.tunein = tunein.TuneIn(config['tunein']['timeout'], session)
         self.library = TuneInLibrary(self)
         self.playback = TuneInPlayback(audio=audio,
                                        backend=self,
