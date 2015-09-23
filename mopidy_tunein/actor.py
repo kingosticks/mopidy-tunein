@@ -5,13 +5,14 @@ import logging
 from mopidy import backend, exceptions, httpclient
 from mopidy.audio import scan
 from mopidy.models import Ref, SearchResult
+from mopidy.internal import http, playlists
 
 import pykka
 
 import requests
 
 import mopidy_tunein
-from mopidy_tunein import translator, tunein
+from mopidy_tunein import translator, tunein, Extension
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
         self.library = TuneInLibrary(self)
         self.playback = TuneInPlayback(audio=audio,
                                        backend=self,
-                                       timeout=config['tunein']['timeout'])
+                                       config=config)
 
 
 class TuneInLibrary(backend.LibraryProvider):
@@ -120,9 +121,14 @@ class TuneInLibrary(backend.LibraryProvider):
 
 
 class TuneInPlayback(backend.PlaybackProvider):
-    def __init__(self, audio, backend, timeout):
+    def __init__(self, audio, backend, config):
         super(TuneInPlayback, self).__init__(audio, backend)
-        self._scanner = scan.Scanner(timeout=timeout)
+        self._scanner = scan.Scanner(timeout=config['tunein']['timeout'])
+        self._config = config
+        self._session = http.get_requests_session(
+            proxy_config=config['proxy'],
+            user_agent='%s/%s' % (
+                Extension.dist_name, Extension.version))
 
     def translate_uri(self, uri):
         variant, identifier = translator.parse_uri(uri)
@@ -134,9 +140,18 @@ class TuneInPlayback(backend.PlaybackProvider):
             uri = stream_uris.pop(0)
             logger.debug('Looking up URI: %s.' % uri)
             try:
+            new_uri = _unwrap_stream(
+                uri,
+                scanner=self._scanner,
+                requests_session=self._session,
+                recursion_level=10
+            )
+            if new_uri:
                 # TODO: Somehow update metadata using station.
-                return self._scanner.scan(uri).uri
-            except exceptions.ScannerError as se:
+                return new_uri
+#                   return self._scanner.scan(uri).uri
+#                except exceptions.ScannerError as se:
+            else:
                 logger.debug('Mopidy scan failed: %s.' % se)
                 new_uris = self.backend.tunein.parse_stream_url(uri)
                 if new_uris == [uri]:
@@ -146,3 +161,67 @@ class TuneInPlayback(backend.PlaybackProvider):
                 stream_uris.extend(new_uris)
         logger.debug('TuneIn lookup failed.')
         return None
+
+def _unwrap_stream(uri, scanner, requests_session, recursion_level):
+    """
+    Get a stream URI from a playlist URI, ``uri``.
+
+    Unwraps nested playlists until something that's not a playlist is found or
+    the ``timeout`` is reached.
+    """
+
+    original_uri = uri
+    seen_uris = set()
+
+#    while time.time() < deadline:
+    while True:
+        if uri in seen_uris:
+            logger.info(
+                'Unwrapping stream from URI (%s) failed: '
+                'playlist referenced itself', uri)
+            return None
+        else:
+            seen_uris.add(uri)
+
+        logger.debug('Unwrapping stream from URI: %s', uri)
+
+        try:
+            scan_result = scanner.scan(uri)
+        except exceptions.ScannerError as exc:
+            logger.debug('GStreamer failed scanning URI (%s): %s', uri, exc)
+            scan_result = None
+
+        if scan_result is not None and not (
+                scan_result.mime.startswith('text/') or
+                scan_result.mime.startswith('application/')):
+            logger.debug(
+                'Unwrapped potential %s stream: %s', scan_result.mime, uri)
+            return uri
+
+        content = http.download(
+            requests_session, uri)
+
+        if content is None:
+            logger.info(
+                'Unwrapping stream from URI (%s) failed: '
+                'error downloading URI %s', original_uri, uri)
+            return None
+
+        uris = playlists.parse(content)
+        if not uris:
+            logger.debug(
+                'Failed parsing URI (%s) as playlist; found potential stream.',
+                uri)
+            return uri
+
+        # TODO Test streams and return first that seems to be playable
+        logger.debug(
+            'Parsed playlist (%s) and found new URI: %s', uri, uris[0])
+	if recursion_level:
+	    uri = _unwrap_stream(uris[0], scanner, requests_session, recursion_level-1)
+	else:	
+            logger.info(
+                'Unwrapping stream from URI (%s) failed: '
+                'error downloading URI %s', original_uri, uri)
+            return None
+
