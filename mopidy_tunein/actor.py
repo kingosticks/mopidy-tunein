@@ -4,7 +4,9 @@ import logging
 
 from mopidy import backend, exceptions, httpclient
 from mopidy.audio import scan
+from mopidy.internal import http, playlists
 from mopidy.models import Ref, SearchResult
+from mopidy.stream.actor import StreamPlaybackProvider
 
 import pykka
 
@@ -39,11 +41,14 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
                 mopidy_tunein.Extension.dist_name,
                 mopidy_tunein.__version__))
 
+        self._scanner = scan.Scanner(
+            timeout=config['tunein']['timeout'],
+            proxy_config=config['proxy'])
         self.tunein = tunein.TuneIn(config['tunein']['timeout'], session)
         self.library = TuneInLibrary(self)
         self.playback = TuneInPlayback(audio=audio,
                                        backend=self,
-                                       timeout=config['tunein']['timeout'])
+                                       config=config)
 
 
 class TuneInLibrary(backend.LibraryProvider):
@@ -119,10 +124,9 @@ class TuneInLibrary(backend.LibraryProvider):
         return SearchResult(uri='tunein:search', tracks=tracks)
 
 
-class TuneInPlayback(backend.PlaybackProvider):
-    def __init__(self, audio, backend, timeout):
-        super(TuneInPlayback, self).__init__(audio, backend)
-        self._scanner = scan.Scanner(timeout=timeout)
+class TuneInPlayback(StreamPlaybackProvider):
+    def __init__(self, audio, backend, config):
+        super(TuneInPlayback, self).__init__(audio, backend, config)
 
     def translate_uri(self, uri):
         variant, identifier = translator.parse_uri(uri)
@@ -133,10 +137,10 @@ class TuneInPlayback(backend.PlaybackProvider):
         while stream_uris:
             uri = stream_uris.pop(0)
             logger.debug('Looking up URI: %s.' % uri)
-            try:
-                # TODO: Somehow update metadata using station.
-                return self._scanner.scan(uri).uri
-            except exceptions.ScannerError as se:
+            new_uri = super(TuneInPlayback, self).translate_uri(uri)
+            if new_uri:
+                return new_uri
+            else:
                 logger.debug('Mopidy scan failed: %s.' % se)
                 new_uris = self.backend.tunein.parse_stream_url(uri)
                 if new_uris == [uri]:
