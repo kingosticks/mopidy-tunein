@@ -2,9 +2,8 @@ from __future__ import unicode_literals
 
 import logging
 
-from mopidy import backend, exceptions, httpclient
+from mopidy import backend, httpclient
 from mopidy.audio import scan
-from mopidy.internal import http, playlists
 from mopidy.models import Ref, SearchResult
 from mopidy.stream.actor import StreamPlaybackProvider
 
@@ -141,7 +140,7 @@ class TuneInPlayback(StreamPlaybackProvider):
             if new_uri:
                 return new_uri
             else:
-                logger.debug('Mopidy scan failed: %s.' % se)
+                logger.debug('Mopidy translate_uri failed.')
                 new_uris = self.backend.tunein.parse_stream_url(uri)
                 if new_uris == [uri]:
                     logger.debug(
