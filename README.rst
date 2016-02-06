@@ -74,11 +74,12 @@ Project resources
 Changelog
 =========
 
-v0.2.3 (UNRELEASED)
+v0.3.0 (2016-02-06)
 -------------------
 
 - Requires Mopidy v1.1
 - Respect user's Mopidy proxy configuration and set user-agent.
+- Utilise Mopidy's nested playlist handling (Fixes: #23 PR: #22)
 
 v0.2.2 (2015-04-24)
 -------------------
