@@ -2,15 +2,30 @@ from __future__ import unicode_literals
 
 import logging
 
-from mopidy import backend, exceptions
+from mopidy import backend, httpclient
 from mopidy.audio import scan
 from mopidy.models import Ref, SearchResult
+from mopidy.stream.actor import StreamPlaybackProvider
 
 import pykka
 
+import requests
+
+import mopidy_tunein
 from mopidy_tunein import translator, tunein
 
 logger = logging.getLogger(__name__)
+
+
+def get_requests_session(proxy_config, user_agent):
+    proxy = httpclient.format_proxy(proxy_config)
+    full_user_agent = httpclient.format_user_agent(user_agent)
+
+    session = requests.Session()
+    session.proxies.update({'http': proxy, 'https': proxy})
+    session.headers.update({'user-agent': full_user_agent})
+
+    return session
 
 
 class TuneInBackend(pykka.ThreadingActor, backend.Backend):
@@ -18,11 +33,21 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
 
     def __init__(self, config, audio):
         super(TuneInBackend, self).__init__()
-        self.tunein = tunein.TuneIn(config['tunein']['timeout'])
+
+        session = get_requests_session(
+            proxy_config=config['proxy'],
+            user_agent='%s/%s' % (
+                mopidy_tunein.Extension.dist_name,
+                mopidy_tunein.__version__))
+
+        self._scanner = scan.Scanner(
+            timeout=config['tunein']['timeout'],
+            proxy_config=config['proxy'])
+        self.tunein = tunein.TuneIn(config['tunein']['timeout'], session)
         self.library = TuneInLibrary(self)
         self.playback = TuneInPlayback(audio=audio,
                                        backend=self,
-                                       timeout=config['tunein']['timeout'])
+                                       config=config)
 
 
 class TuneInLibrary(backend.LibraryProvider):
@@ -98,10 +123,9 @@ class TuneInLibrary(backend.LibraryProvider):
         return SearchResult(uri='tunein:search', tracks=tracks)
 
 
-class TuneInPlayback(backend.PlaybackProvider):
-    def __init__(self, audio, backend, timeout):
-        super(TuneInPlayback, self).__init__(audio, backend)
-        self._scanner = scan.Scanner(timeout=timeout)
+class TuneInPlayback(StreamPlaybackProvider):
+    def __init__(self, audio, backend, config):
+        super(TuneInPlayback, self).__init__(audio, backend, config)
 
     def translate_uri(self, uri):
         variant, identifier = translator.parse_uri(uri)
@@ -112,11 +136,11 @@ class TuneInPlayback(backend.PlaybackProvider):
         while stream_uris:
             uri = stream_uris.pop(0)
             logger.debug('Looking up URI: %s.' % uri)
-            try:
-                # TODO: Somehow update metadata using station.
-                return self._scanner.scan(uri).uri
-            except exceptions.ScannerError as se:
-                logger.debug('Mopidy scan failed: %s.' % se)
+            new_uri = super(TuneInPlayback, self).translate_uri(uri)
+            if new_uri:
+                return new_uri
+            else:
+                logger.debug('Mopidy translate_uri failed.')
                 new_uris = self.backend.tunein.parse_stream_url(uri)
                 if new_uris == [uri]:
                     logger.debug(

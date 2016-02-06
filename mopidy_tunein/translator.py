@@ -48,11 +48,11 @@ def station_to_ref(station):
 def station_to_track(station):
     ref = station_to_ref(station)
     return Track(uri=ref.uri,
-                 name=ref.name,
+                 name=station.get('subtext', ref.name),
                  album=Album(name=ref.name,
                              uri=ref.uri,
                              images=[station.get('image')]),
-                 artists=[Artist(name=station.get('subtext', ''))])
+                 artists=[Artist(name=ref.name, uri=ref.uri)])
 
 
 def show_to_ref(show):
