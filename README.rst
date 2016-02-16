@@ -77,7 +77,7 @@ Changelog
 v0.4.0 (2016-02-16)
 -------------------
 
-- Borrow Mopidy's internal stream unwrapping to avoid incompatibilities with Mopidy v2.0.0 (PR: #27)
+- Borrow Mopidy's internal stream unwrapping to avoid incompatibilities with Mopidy v2.0.0 (PR: #28)
 - Improved handling of malformed pls playlists.
 
 v0.3.0 (2016-02-06)
