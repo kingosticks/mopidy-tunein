@@ -74,6 +74,12 @@ Project resources
 Changelog
 =========
 
+v0.4.0 (2016-02-16)
+-------------------
+
+- Requires Mopidy v2.0
+- Improved handling of malformed pls playlists.
+
 v0.3.0 (2016-02-06)
 -------------------
 
