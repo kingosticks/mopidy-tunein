@@ -93,7 +93,7 @@ def parse_pls(data):
                     if cp.get(section, 'length%d' % (i+1)) == '-1':
                         yield cp.get(section, 'file%d' % (i+1))
                 else:
-                    yield cp.get(section, 'file%d' % (i+1))                
+                    yield cp.get(section, 'file%d' % (i+1))
             except configparser.NoOptionError:
                 return
 
@@ -308,11 +308,11 @@ class TuneIn(object):
             parser = find_playlist_parser(extension, content_type)
             if parser:
                 playlist_data = StringIO.StringIO(playlist)
-                try: 
+                try:
                     results = [u for u in parser(playlist_data)
                                if u and u != url]
                 except Exception as e:
-                    logger.error('TuneIn playlist parsing failed %s' % e) 
+                    logger.error('TuneIn playlist parsing failed %s' % e)
                 if not results:
                     logger.debug('Parsing failure, '
                                  'malformed playlist: %s' % playlist)
