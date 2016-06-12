@@ -48,7 +48,7 @@ def station_to_ref(station):
 def station_to_track(station):
     ref = station_to_ref(station)
     return Track(uri=ref.uri,
-                 name=station.get('subtext', ref.name),
+                 name=station.get('text', ref.name),
                  album=Album(name=ref.name,
                              uri=ref.uri,
                              images=[station.get('image')]),
