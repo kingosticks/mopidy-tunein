@@ -1,6 +1,6 @@
-****************************
+*************
 Mopidy-TuneIn
-****************************
+*************
 
 .. image:: https://img.shields.io/pypi/v/Mopidy-TuneIn.svg?style=flat
     :target: https://pypi.python.org/pypi/Mopidy-TuneIn/
