@@ -75,7 +75,7 @@ Project resources
 Changelog
 =========
 
-v0.4.1 (UNRELEASED)
+v0.4.1 (2016-06-14)
 -------------------
 
 - Port timeout fix for Mopidy's internal stream unwrapping code from mopidy/mopidy#1522 (Fixes: #31)
