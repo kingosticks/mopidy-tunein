@@ -2,19 +2,19 @@
 Mopidy-TuneIn
 ****************************
 
-.. image:: https://pypip.in/v/Mopidy-TuneIn/badge.png
+.. image:: https://img.shields.io/pypi/v/Mopidy-TuneIn.svg?style=flat
     :target: https://pypi.python.org/pypi/Mopidy-TuneIn/
     :alt: Latest PyPI version
 
-.. image:: https://pypip.in/d/Mopidy-TuneIn/badge.png
+.. image:: https://img.shields.io/pypi/dm/Mopidy-TuneIn.svg?style=flat
     :target: https://pypi.python.org/pypi/Mopidy-TuneIn/
     :alt: Number of PyPI downloads
 
-.. image:: https://travis-ci.org/kingosticks/mopidy-tunein.png?branch=master
+.. image:: https://img.shields.io/travis/kingosticks/mopidy-tunein/develop.svg?style=flat
     :target: https://travis-ci.org/kingosticks/mopidy-tunein
     :alt: Travis CI build status
 
-.. image:: https://coveralls.io/repos/kingosticks/mopidy-tunein/badge.png?branch=master
+.. image:: https://img.shields.io/coveralls/kingosticks/mopidy-tunein/develop.svg?style=flat
    :target: https://coveralls.io/r/kingosticks/mopidy-tunein?branch=master
    :alt: Test coverage
 
@@ -74,6 +74,11 @@ Project resources
 
 Changelog
 =========
+
+v0.4.1 (2016-06-14)
+-------------------
+
+- Port timeout fix for Mopidy's internal stream unwrapping code from mopidy/mopidy#1522 (Fixes: #31)
 
 v0.4.0 (2016-02-16)
 -------------------
