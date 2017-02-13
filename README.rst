@@ -57,8 +57,8 @@ The following functionality is not yet implemented:
 Configuration
 =============
 
-Before starting Mopidy, you must add configuration for
-Mopidy-TuneIn to your Mopidy configuration file::
+You can add configuration for
+Mopidy-TuneIn to your Mopidy configuration file but it's not required::
 
     [tunein]
     timeout = 5000
