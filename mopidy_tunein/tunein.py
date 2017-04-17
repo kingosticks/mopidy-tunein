@@ -99,7 +99,7 @@ def parse_pls(data):
 
 
 def fix_asf_uri(uri):
-    return re.sub(r'http://(.+\?mswmext=\.asf)', r'mms://\1', uri, re.I)
+    return re.sub(r'http://(.+\?mswmext=\.asf)', r'mms://\1', uri, flags=re.I)
 
 
 def parse_old_asx(data):
