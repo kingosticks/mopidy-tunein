@@ -12,6 +12,9 @@ from contextlib import closing
 
 import requests
 
+import mopidy_tunein
+from mopidy_tunein import translator
+
 try:
     import cStringIO as StringIO
 except ImportError:
@@ -176,10 +179,15 @@ def find_playlist_parser(extension, content_type):
 class TuneIn(object):
     """Wrapper for the TuneIn API."""
 
-    def __init__(self, timeout, session=None):
+    def __init__(self, timeout, filter=None, session=None):
         self._base_uri = 'http://opml.radiotime.com/%s'
         self._session = session or requests.Session()
         self._timeout = timeout / 1000.0
+        self._filter = filter
+        if (filter == translator.TUNEIN_ID_STATION):
+            self._filter = 'filter=%s' % ('s')
+        elif (filter == translator.TUNEIN_ID_PROGRAM):
+            self._filter = 'filter=%s' % ('p')
         self._stations = {}
 
     def reload(self):
@@ -360,6 +368,8 @@ class TuneIn(object):
     @cache()
     def _tunein(self, variant, args):
         uri = (self._base_uri % variant) + '?render=json' + args
+        if self._filter is not None:
+            uri = '%s&%s' % (uri, self._filter)
         logger.debug('TuneIn request: %s', uri)
         try:
             with closing(self._session.get(uri, timeout=self._timeout)) as r:

@@ -21,3 +21,4 @@ class ExtensionTest(unittest.TestCase):
         schema = ext.get_config_schema()
 
         self.assertIn('timeout', schema)
+        self.assertIn('filter', schema)
