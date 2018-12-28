@@ -62,7 +62,12 @@ Mopidy-TuneIn to your Mopidy configuration file but it's not required::
 
     [tunein]
     timeout = 5000
+    filter = 
 
+The following filter values are available:
+
+ - ``tunein/filter/stations``  Limits the search results only to stations
+ - ``tunein/filter/shows``  Limits the search results only to shows
 
 Project resources
 =================

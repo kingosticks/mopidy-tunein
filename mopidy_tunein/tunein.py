@@ -176,10 +176,11 @@ def find_playlist_parser(extension, content_type):
 class TuneIn(object):
     """Wrapper for the TuneIn API."""
 
-    def __init__(self, timeout, session=None):
+    def __init__(self, timeout, filter=None, session=None):
         self._base_uri = 'http://opml.radiotime.com/%s'
         self._session = session or requests.Session()
         self._timeout = timeout / 1000.0
+        self._filter = filter
         self._stations = {}
 
     def reload(self):
@@ -360,6 +361,11 @@ class TuneIn(object):
     @cache()
     def _tunein(self, variant, args):
         uri = (self._base_uri % variant) + '?render=json' + args
+        #TODO: if config filters are set add it
+        if (self._filter == 'stations'):
+          uri = '%s&filter=%s' % (uri, 's')
+        elif (self._filter == 'shows'):
+          uri = '%s&filter=%s' % (uri, 'p') 
         logger.debug('TuneIn request: %s', uri)
         try:
             with closing(self._session.get(uri, timeout=self._timeout)) as r:
