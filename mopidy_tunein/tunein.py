@@ -12,6 +12,9 @@ from contextlib import closing
 
 import requests
 
+import mopidy_tunein
+from mopidy_tunein import translator
+
 try:
     import cStringIO as StringIO
 except ImportError:
@@ -362,10 +365,10 @@ class TuneIn(object):
     def _tunein(self, variant, args):
         uri = (self._base_uri % variant) + '?render=json' + args
         #TODO: if config filters are set add it
-        if (self._filter == 'stations'):
+        if (self._filter == translator.get_id_type('s')):
           uri = '%s&filter=%s' % (uri, 's')
-        elif (self._filter == 'shows'):
-          uri = '%s&filter=%s' % (uri, 'p') 
+        elif (self._filter == translator.get_id_type('p')):
+          uri = '%s&filter=%s' % (uri, 'p')
         logger.debug('TuneIn request: %s', uri)
         try:
             with closing(self._session.get(uri, timeout=self._timeout)) as r:
