@@ -20,7 +20,7 @@ class Extension(ext.Extension):
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
         schema['timeout'] = config.Integer(minimum=0)
-        schema['filter'] = config.String(optional=True)
+        schema['filter'] = config.String(optional=True, choices=('stations', 'shows'))
         return schema
 
     def setup(self, registry):
