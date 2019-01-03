@@ -370,7 +370,7 @@ class TuneIn(object):
         uri = (self._base_uri % variant) + '?render=json' + args
         # if config filters are set add it
         if (self._filter is not None):
-          uri = '%s&%s' % (uri, self._filter)
+            uri = '%s&%s' % (uri, self._filter)
         logger.debug('TuneIn request: %s', uri)
         try:
             with closing(self._session.get(uri, timeout=self._timeout)) as r:
