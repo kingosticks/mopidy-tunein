@@ -361,11 +361,11 @@ class TuneIn(object):
     @cache()
     def _tunein(self, variant, args):
         uri = (self._base_uri % variant) + '?render=json' + args
-        #TODO: if config filters are set add it
-        if (self._filter == 'stations'):
+        # if config filters are set add it
+        if (self._filter == TUNEIN_ID_STATION):
           uri = '%s&filter=%s' % (uri, 's')
-        elif (self._filter == 'shows'):
-          uri = '%s&filter=%s' % (uri, 'p') 
+        elif (self._filter == TUNEIN_ID_PROGRAM):
+          uri = '%s&filter=%s' % (uri, 'p')
         logger.debug('TuneIn request: %s', uri)
         try:
             with closing(self._session.get(uri, timeout=self._timeout)) as r:
