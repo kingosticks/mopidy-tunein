@@ -184,9 +184,9 @@ class TuneIn(object):
         self._session = session or requests.Session()
         self._timeout = timeout / 1000.0
         self._filter = filter
-        if (filter == translator.get_id_type('s')):
+        if (filter == translator.TUNEIN_ID_STATION):
             self._filter = 'filter=%s' % ('s')
-        elif (filter == translator.get_id_type('p')):
+        elif (filter == translator.TUNEIN_ID_PROGRAM):
             self._filter = 'filter=%s' % ('p')
         self._stations = {}
 
