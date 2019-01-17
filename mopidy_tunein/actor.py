@@ -43,11 +43,14 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
                 mopidy_tunein.__version__))
 
         self._timeout = config['tunein']['timeout']
+        self._filter = config['tunein']['filter']
 
         self._scanner = scan.Scanner(
             timeout=config['tunein']['timeout'],
             proxy_config=config['proxy'])
-        self.tunein = tunein.TuneIn(config['tunein']['timeout'], self._session)
+        self.tunein = tunein.TuneIn(
+            config['tunein']['timeout'],
+            config['tunein']['filter'], self._session)
         self.library = TuneInLibrary(self)
         self.playback = TuneInPlayback(audio=audio, backend=self)
 
