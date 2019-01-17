@@ -39,11 +39,10 @@ Install by running::
 .. Or, if available, install the Debian/Ubuntu package from `apt.mopidy.com
 .. <http://apt.mopidy.com/>`_.
 
-Some radio streams may require additional audio plugins. These can be found in the gstreamer plugin packages for your system. For versions of Mopidy prior to v2.0.0, these might include:
- * `gstreamer0.10-plugins-ugly`
- * `gstreamer0.10-plugins-bad`
- * `gstreamer0.10-ffmpeg`
-For Mopidy v2.0.0 and above, use the gstreamer1.0-plugins-* packages instead.
+Some radio streams may require additional audio plugins. These can be found in the gstreamer plugin packages for your system. For Mopidy v2.0.0 and later, these might include:
+ * `gstreamer1.0-plugins-ugly`
+ * `gstreamer1.0-plugins-bad`
+ * `gstreamer1.0-libav`
 
 
 Known issues
