@@ -61,12 +61,12 @@ Mopidy-TuneIn to your Mopidy configuration file but it's not required::
 
     [tunein]
     timeout = 5000
-    filter = 
 
-The following filter values are available:
+The following configuration values are available:
 
- - ``tunein/filter/station``  Limits the search results only to stations
- - ``tunein/filter/program``  Limits the search results only to programs or shows
+- ``tunein/timeout``: Milliseconds before giving up waiting for results. Defaults to ``5000``.
+- ``tunein/filter``:  Limit the search results. ``station``, ``program`` or leave blank to disable filtering. Defaults to blank.
+
 
 Project resources
 =================
@@ -78,6 +78,11 @@ Project resources
 
 Changelog
 =========
+
+v0.5.0 (UNRELEASED)
+-------------------
+
+- Support filtering search results by station or program. (PR: #34)
 
 v0.4.1 (2016-06-14)
 -------------------
