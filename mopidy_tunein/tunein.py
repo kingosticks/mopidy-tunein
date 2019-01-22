@@ -1,18 +1,15 @@
 from __future__ import unicode_literals
 
 import ConfigParser as configparser
-
 import logging
 import re
 import time
 import urlparse
-
 from collections import OrderedDict
 from contextlib import closing
 
 import requests
 
-import mopidy_tunein
 from mopidy_tunein import translator
 
 try:
@@ -368,7 +365,7 @@ class TuneIn(object):
     @cache()
     def _tunein(self, variant, args):
         uri = (self._base_uri % variant) + '?render=json' + args
-        if self._filter is not None:
+        if self._filter is not None and variant == 'Search.ashx':
             uri = '%s&%s' % (uri, self._filter)
         logger.debug('TuneIn request: %s', uri)
         try:
