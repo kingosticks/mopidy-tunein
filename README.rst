@@ -61,6 +61,8 @@ Mopidy-TuneIn to your Mopidy configuration file but it's not required::
 
     [tunein]
     timeout = 5000
+    filter  = 
+    timeout = 5000
 
 The following configuration values are available:
 
