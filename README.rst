@@ -61,13 +61,12 @@ Mopidy-TuneIn to your Mopidy configuration file but it's not required::
 
     [tunein]
     timeout = 5000
-    filter  = 
-    timeout = 5000
 
 The following configuration values are available:
 
-- ``tunein/timeout``: Milliseconds before giving up waiting for results. Defaults to ``5000``.
+- ``tunein/enabled``: If the TuneIn extension should be enabled or not. Defaults to true.
 - ``tunein/filter``:  Limit the search results. ``station``, ``program`` or leave blank to disable filtering. Defaults to blank.
+- ``tunein/timeout``: Milliseconds before giving up waiting for results. Defaults to ``5000``.
 
 
 Project resources
