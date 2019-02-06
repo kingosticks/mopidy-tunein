@@ -6,20 +6,9 @@ import urllib
 
 from mopidy.models import Album, Artist, Ref, Track
 
+from mopidy_tunein.tunein import TuneIn
+
 logger = logging.getLogger(__name__)
-
-TUNEIN_API_ENCODING = 'utf-8'
-
-TUNEIN_ID_PROGRAM = 'program'
-TUNEIN_ID_STATION = 'station'
-TUNEIN_ID_GROUP = 'group'
-TUNEIN_ID_TOPIC = 'topic'
-TUNEIN_ID_CATEGORY = 'category'
-TUNEIN_ID_REGION = 'region'
-TUNEIN_ID_PODCAST = 'podcast_category'
-TUNEIN_ID_AFFILIATE = 'affiliate'
-TUNEIN_ID_STREAM = 'stream'
-TUNEIN_ID_UNKNOWN = 'unknown'
 
 
 def unparse_uri(variant, identifier):
@@ -40,7 +29,7 @@ def station_to_ref(station):
     uri = unparse_uri('station', guide_id)
     name = station.get('text', station['URL'])
     # TODO: Should the name include 'now playing' for all stations?
-    if get_id_type(guide_id) == TUNEIN_ID_TOPIC:
+    if get_id_type(guide_id) == TuneIn.ID_TOPIC:
         name = name + ' [%s]' % station.get('subtext', '??')
     return Ref.track(uri=uri, name=name)
 
@@ -72,7 +61,7 @@ def section_to_ref(section, identifier=''):
     if section.get('type', 'link') == 'audio':
         return station_to_ref(section)
     guide_id = section.get('guide_id', '??')
-    if get_id_type(guide_id) == TUNEIN_ID_REGION or identifier == 'local':
+    if get_id_type(guide_id) == TuneIn.ID_REGION or identifier == 'local':
         uri = unparse_uri('location', guide_id)
     else:
         uri = unparse_uri('section', guide_id)
@@ -80,15 +69,15 @@ def section_to_ref(section, identifier=''):
 
 
 def get_id_type(guide_id):
-    return {'p': TUNEIN_ID_PROGRAM,
-            's': TUNEIN_ID_STATION,
-            'g': TUNEIN_ID_GROUP,
-            't': TUNEIN_ID_TOPIC,
-            'c': TUNEIN_ID_CATEGORY,
-            'r': TUNEIN_ID_REGION,
-            'f': TUNEIN_ID_PODCAST,
-            'a': TUNEIN_ID_AFFILIATE,
-            'e': TUNEIN_ID_STREAM}.get(guide_id[0], TUNEIN_ID_UNKNOWN)
+    return {'p': TuneIn.ID_PROGRAM,
+            's': TuneIn.ID_STATION,
+            'g': TuneIn.ID_GROUP,
+            't': TuneIn.ID_TOPIC,
+            'c': TuneIn.ID_CATEGORY,
+            'r': TuneIn.ID_REGION,
+            'f': TuneIn.ID_PODCAST,
+            'a': TuneIn.ID_AFFILIATE,
+            'e': TuneIn.ID_STREAM}.get(guide_id[0], TuneIn.ID_UNKNOWN)
 
 
 def mopidy_to_tunein_query(mopidy_query):
@@ -99,5 +88,5 @@ def mopidy_to_tunein_query(mopidy_query):
         for value in values:
             if field == 'any':
                 tunein_query.append(value)
-    query = ' '.join(tunein_query).encode(TUNEIN_API_ENCODING)
+    query = ' '.join(tunein_query).encode(TuneIn.API_ENCODING)
     return urllib.pathname2url(query)
