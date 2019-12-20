@@ -132,7 +132,7 @@ def parse_new_asx(data):
 
 
 def parse_asx(data):
-    if b"asx" in data.getvalue()[0:50].lower():
+    if b"asx" in data[0:50].lower():
         return parse_new_asx(data)
     else:
         return parse_old_asx(data)
