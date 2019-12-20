@@ -4,7 +4,6 @@ import time
 import pykka
 import requests
 
-import mopidy_tunein
 from mopidy import backend, exceptions, httpclient
 from mopidy.audio import scan
 
@@ -248,5 +247,7 @@ def _unwrap_stream(uri, timeout, scanner, requests_session):
             return uri, None
 
         # TODO Test streams and return first that seems to be playable
-        logger.debug(f"Parsed playlist ({uri!r}) and found new URI: {uris[0]!r}")
+        logger.debug(
+            f"Parsed playlist ({uri!r}) and found new URI: {uris[0]!r}"
+        )
         uri = uris[0]

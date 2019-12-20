@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 import requests
 
-import xml.etree.ElementTree as elementtree
+import xml.etree.ElementTree as elementtree  # noqa: N813
 
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class PlaylistError(Exception):
     pass
 
 
-class cache:
+class cache:  # noqa N801
     # TODO: merge this to util library (copied from mopidy-spotify)
 
     def __init__(self, ctl=0, ttl=3600):
@@ -336,7 +336,7 @@ class TuneIn:
                 except Exception as e:
                     logger.error(f"TuneIn playlist parsing failed {e}")
                 if not results:
-                    playlist_str = playlist_data.decode(errors='ignore')
+                    playlist_str = playlist_data.decode(errors="ignore")
                     logger.debug(
                         f"Parsing failure, malformed playlist: {playlist_str}"
                     )
