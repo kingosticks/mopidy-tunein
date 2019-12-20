@@ -1,71 +1,65 @@
-from __future__ import unicode_literals
-
 import logging
 import time
 
+import pykka
+import requests
+
 from mopidy import backend, exceptions, httpclient
 from mopidy.audio import scan
+
 # TODO: Something else, using internal APIs is not cool.
 from mopidy.internal import http, playlists
 from mopidy.models import Ref, SearchResult
-
-import pykka
-
-import requests
-
-import mopidy_tunein
-from mopidy_tunein import translator, tunein
+from mopidy_tunein import translator, tunein, Extension, __version__
 
 logger = logging.getLogger(__name__)
 
 
-def get_requests_session(proxy_config, user_agent):
+def get_requests_session(proxy_config):
+    user_agent = f"{Extension.dist_name}/{__version__}"
     proxy = httpclient.format_proxy(proxy_config)
     full_user_agent = httpclient.format_user_agent(user_agent)
 
     session = requests.Session()
-    session.proxies.update({'http': proxy, 'https': proxy})
-    session.headers.update({'user-agent': full_user_agent})
+    session.proxies.update({"http": proxy, "https": proxy})
+    session.headers.update({"user-agent": full_user_agent})
 
     return session
 
 
 class TuneInBackend(pykka.ThreadingActor, backend.Backend):
-    uri_schemes = ['tunein']
+    uri_schemes = ["tunein"]
 
     def __init__(self, config, audio):
-        super(TuneInBackend, self).__init__()
+        super().__init__()
 
-        self._session = get_requests_session(
-            proxy_config=config['proxy'],
-            user_agent='%s/%s' % (
-                mopidy_tunein.Extension.dist_name,
-                mopidy_tunein.__version__))
-
-        self._timeout = config['tunein']['timeout']
-        self._filter = config['tunein']['filter']
+        self._session = get_requests_session(config["proxy"])
+        self._timeout = config["tunein"]["timeout"]
+        self._filter = config["tunein"]["filter"]
 
         self._scanner = scan.Scanner(
-            timeout=config['tunein']['timeout'],
-            proxy_config=config['proxy'])
+            timeout=config["tunein"]["timeout"], proxy_config=config["proxy"]
+        )
         self.tunein = tunein.TuneIn(
-            config['tunein']['timeout'],
-            config['tunein']['filter'], self._session)
+            config["tunein"]["timeout"],
+            config["tunein"]["filter"],
+            self._session,
+        )
         self.library = TuneInLibrary(self)
         self.playback = TuneInPlayback(audio=audio, backend=self)
 
 
 class TuneInLibrary(backend.LibraryProvider):
-    root_directory = Ref.directory(uri='tunein:root', name='TuneIn')
+    root_directory = Ref.directory(uri="tunein:root", name="TuneIn")
 
     def __init__(self, backend):
-        super(TuneInLibrary, self).__init__(backend)
+        super().__init__(backend)
 
     def browse(self, uri):
         result = []
         variant, identifier = translator.parse_uri(uri)
-        logger.debug('Browsing %s' % uri)
-        if variant == 'root':
+        logger.debug(f"Browsing {uri!r}")
+        if variant == "root":
             for category in self.backend.tunein.categories():
                 result.append(translator.category_to_ref(category))
         elif variant == "category" and identifier:
@@ -73,16 +67,22 @@ class TuneInLibrary(backend.LibraryProvider):
                 result.append(translator.section_to_ref(section, identifier))
         elif variant == "location" and identifier:
             for location in self.backend.tunein.locations(identifier):
-                result.append(translator.section_to_ref(location, 'local'))
+                result.append(translator.section_to_ref(location, "local"))
             for station in self.backend.tunein.stations(identifier):
                 result.append(translator.station_to_ref(station))
         elif variant == "section" and identifier:
-            if (self.backend.tunein.related(identifier)):
-                result.append(Ref.directory(
-                    uri='tunein:related:%s' % identifier, name='Related'))
-            if (self.backend.tunein.shows(identifier)):
-                result.append(Ref.directory(
-                    uri='tunein:shows:%s' % identifier, name='Shows'))
+            if self.backend.tunein.related(identifier):
+                result.append(
+                    Ref.directory(
+                        uri=f"tunein:related:{identifier}", name="Related"
+                    )
+                )
+            if self.backend.tunein.shows(identifier):
+                result.append(
+                    Ref.directory(
+                        uri=f"tunein:shows:{identifier}", name="Shows"
+                    )
+                )
             for station in self.backend.tunein.featured(identifier):
                 result.append(translator.section_to_ref(station))
             for station in self.backend.tunein.local(identifier):
@@ -99,7 +99,7 @@ class TuneInLibrary(backend.LibraryProvider):
             for episode in self.backend.tunein.episodes(identifier):
                 result.append(translator.station_to_ref(episode))
         else:
-            logger.debug('Unknown URI: %s', uri)
+            logger.debug(f"Unknown URI: {uri!r}")
 
         return result
 
@@ -108,7 +108,7 @@ class TuneInLibrary(backend.LibraryProvider):
 
     def lookup(self, uri):
         variant, identifier = translator.parse_uri(uri)
-        if variant != 'station':
+        if variant != "station":
             return []
         station = self.backend.tunein.station(identifier)
         if not station:
@@ -116,6 +116,18 @@ class TuneInLibrary(backend.LibraryProvider):
 
         track = translator.station_to_track(station)
         return [track]
+
+    def get_images(self, uris):
+        results = {}
+        for uri in uris:
+            variant, identifier = translator.parse_uri(uri)
+            if variant != "station":
+                continue
+            station = self.backend.tunein.station(identifier)
+            image = translator.station_to_image(station)
+            if image is not None:
+                results[uri] = [image]
+        return results
 
     def search(self, query=None, uris=None, exact=False):
         if query is None or not query:
@@ -125,11 +137,10 @@ class TuneInLibrary(backend.LibraryProvider):
         for station in self.backend.tunein.search(tunein_query):
             track = translator.station_to_track(station)
             tracks.append(track)
-        return SearchResult(uri='tunein:search', tracks=tracks)
+        return SearchResult(uri="tunein:search", tracks=tracks)
 
 
 class TuneInPlayback(backend.PlaybackProvider):
-
     def translate_uri(self, uri):
         variant, identifier = translator.parse_uri(uri)
         station = self.backend.tunein.station(identifier)
@@ -138,25 +149,27 @@ class TuneInPlayback(backend.PlaybackProvider):
         stream_uris = self.backend.tunein.tune(station)
         while stream_uris:
             uri = stream_uris.pop(0)
-            logger.debug('Looking up URI: %s.' % uri)
+            logger.debug(f"Looking up URI: {uri!r}")
             new_uri = self.unwrap_stream(uri)
             if new_uri:
                 return new_uri
             else:
-                logger.debug('Mopidy translate_uri failed.')
+                logger.debug("Mopidy translate_uri failed.")
                 new_uris = self.backend.tunein.parse_stream_url(uri)
                 if new_uris == [uri]:
-                    logger.debug(
-                        'Last attempt, play stream anyway: %s.' % uri)
+                    logger.debug(f"Last attempt, play stream anyway: {uri!r}")
                     return uri
                 stream_uris.extend(new_uris)
-        logger.debug('TuneIn lookup failed.')
+        logger.debug("TuneIn lookup failed.")
         return None
 
     def unwrap_stream(self, uri):
         unwrapped_uri, _ = _unwrap_stream(
-            uri, timeout=self.backend._timeout, scanner=self.backend._scanner,
-            requests_session=self.backend._session)
+            uri,
+            timeout=self.backend._timeout,
+            scanner=self.backend._scanner,
+            requests_session=self.backend._session,
+        )
         return unwrapped_uri
 
 
@@ -176,58 +189,65 @@ def _unwrap_stream(uri, timeout, scanner, requests_session):
     while time.time() < deadline:
         if uri in seen_uris:
             logger.info(
-                'Unwrapping stream from URI (%s) failed: '
-                'playlist referenced itself', uri)
+                f"Unwrapping stream from URI ({uri!r}) failed: "
+                "playlist referenced itself",
+            )
             return None, None
         else:
             seen_uris.add(uri)
 
-        logger.debug('Unwrapping stream from URI: %s', uri)
+        logger.debug(f"Unwrapping stream from URI: {uri!r}")
 
         try:
             scan_timeout = deadline - time.time()
             if scan_timeout < 0:
                 logger.info(
-                    'Unwrapping stream from URI (%s) failed: '
-                    'timed out in %sms', uri, timeout)
+                    f"Unwrapping stream from URI ({uri!r}) failed: "
+                    f"timed out in {timeout}ms",
+                )
                 return None, None
             scan_result = scanner.scan(uri, timeout=scan_timeout)
         except exceptions.ScannerError as exc:
-            logger.debug('GStreamer failed scanning URI (%s): %s', uri, exc)
+            logger.debug(f"GStreamer failed scanning URI ({uri!r}): {exc}")
             scan_result = None
 
         if scan_result is not None:
             if scan_result.playable or (
-                not scan_result.mime.startswith('text/') and
-                not scan_result.mime.startswith('application/')
+                not scan_result.mime.startswith("text/")
+                and not scan_result.mime.startswith("application/")
             ):
                 logger.debug(
-                    'Unwrapped potential %s stream: %s', scan_result.mime, uri)
+                    f"Unwrapped potential {scan_result.mime} stream: {uri!r}"
+                )
                 return uri, scan_result
 
         download_timeout = deadline - time.time()
         if download_timeout < 0:
             logger.info(
-                'Unwrapping stream from URI (%s) failed: timed out in %sms',
-                uri, timeout)
+                f"Unwrapping stream from URI ({uri!r}) failed: timed out in {timeout}ms"
+            )
             return None, None
         content = http.download(
-            requests_session, uri, timeout=download_timeout / 1000)
+            requests_session, uri, timeout=download_timeout / 1000
+        )
 
         if content is None:
             logger.info(
-                'Unwrapping stream from URI (%s) failed: '
-                'error downloading URI %s', original_uri, uri)
+                f"Unwrapping stream from URI ({original_uri!r}) failed: "
+                f"error downloading URI {uri!r}",
+            )
             return None, None
 
         uris = playlists.parse(content)
         if not uris:
             logger.debug(
-                'Failed parsing URI (%s) as playlist; found potential stream.',
-                uri)
+                f"Failed parsing URI ({uri!r}) as playlist; "
+                "found potential stream.",
+            )
             return uri, None
 
         # TODO Test streams and return first that seems to be playable
         logger.debug(
-            'Parsed playlist (%s) and found new URI: %s', uri, uris[0])
+            f"Parsed playlist ({uri!r}) and found new URI: {uris[0]!r}"
+        )
         uri = uris[0]

@@ -1,8 +1,3 @@
-from __future__ import unicode_literals
-
-import io
-import unittest
-
 from mopidy_tunein import tunein
 
 ASX = b"""<ASX version="3.0">
@@ -42,34 +37,36 @@ Ref3=http://tmp.com/baz
 """
 
 
-class BaseAsxPlaylistTest(object):
+class BasePlaylistAsx:
     valid = None
     parse = staticmethod(tunein.parse_asx)
 
     def test_parse_valid_playlist(self):
-        uris = list(self.parse(io.BytesIO(self.valid)))
-        expected = [b'file:///tmp/foo', b'file:///tmp/bar', b'file:///tmp/baz']
-        self.assertEqual(uris, expected)
+        uris = list(self.parse(self.valid))
+        expected = ["file:///tmp/foo", "file:///tmp/bar", "file:///tmp/baz"]
+        assert uris == expected
 
 
-class AsxPlaylistTest(BaseAsxPlaylistTest, unittest.TestCase):
+class AsxPlaylistTest(BasePlaylistAsx):
     valid = ASX
 
 
-class AsxSimplePlaylistTest(BaseAsxPlaylistTest, unittest.TestCase):
+class AsxSimplePlaylistTest(BasePlaylistAsx):
     valid = SIMPLE_ASX
 
 
-class AsxOldPlaylistTest(BaseAsxPlaylistTest, unittest.TestCase):
+class AsxOldPlaylistTest(BasePlaylistAsx):
     valid = OLD_ASX
 
 
-class PlaylistTest(unittest.TestCase):
+class TestPlaylist:
     parse = staticmethod(tunein.parse_asx)
 
     def test_parse_asf_playlist(self):
-        uris = list(self.parse(io.BytesIO(ASF_ASX)))
-        expected = [b'mms://tmp.com/foo-mbr?mswmext=.asf',
-                    b'mms://tmp.com:80/bar-mbr?mswmext=.asf',
-                    b'http://tmp.com/baz']
-        self.assertEqual(uris, expected)
+        uris = list(self.parse(ASF_ASX))
+        expected = [
+            "mms://tmp.com/foo-mbr?mswmext=.asf",
+            "mms://tmp.com:80/bar-mbr?mswmext=.asf",
+            "http://tmp.com/baz",
+        ]
+        assert uris == expected
