@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import io
 import unittest
 
@@ -42,13 +40,13 @@ Ref3=http://tmp.com/baz
 """
 
 
-class BaseAsxPlaylistTest(object):
+class BaseAsxPlaylistTest:
     valid = None
     parse = staticmethod(tunein.parse_asx)
 
     def test_parse_valid_playlist(self):
         uris = list(self.parse(io.BytesIO(self.valid)))
-        expected = [b'file:///tmp/foo', b'file:///tmp/bar', b'file:///tmp/baz']
+        expected = [b"file:///tmp/foo", b"file:///tmp/bar", b"file:///tmp/baz"]
         self.assertEqual(uris, expected)
 
 
@@ -69,7 +67,9 @@ class PlaylistTest(unittest.TestCase):
 
     def test_parse_asf_playlist(self):
         uris = list(self.parse(io.BytesIO(ASF_ASX)))
-        expected = [b'mms://tmp.com/foo-mbr?mswmext=.asf',
-                    b'mms://tmp.com:80/bar-mbr?mswmext=.asf',
-                    b'http://tmp.com/baz']
+        expected = [
+            b"mms://tmp.com/foo-mbr?mswmext=.asf",
+            b"mms://tmp.com:80/bar-mbr?mswmext=.asf",
+            b"http://tmp.com/baz",
+        ]
         self.assertEqual(uris, expected)

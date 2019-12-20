@@ -8,11 +8,11 @@ v1.0.0a1 (UNRELEASED)
 
 Alpha release.
 
-- Require Mopidy >= 3.0.0a5. (PR: #223)
+- Require Mopidy >= 3.0.0a5. (PR: #36)
 
-- Require Python >= 3.7. (PR: #223)
+- Require Python >= 3.7. (PR: #36)
 
-- Update project setup. (PR: #223)
+- Update project setup. (PR: #36)
 
 - Support filtering search results by station or program. (PR: #34)
 
