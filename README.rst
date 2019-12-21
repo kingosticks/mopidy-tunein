@@ -6,12 +6,12 @@ Mopidy-TuneIn
     :target: https://pypi.org/project/Mopidy-TuneIn/
     :alt: Latest PyPI version
 
-.. image:: https://img.shields.io/circleci/build/gh/kingosticks/Mopidy-TuneIn
-    :target: https://circleci.com/gh/kingosticks/Mopidy-TuneIn
+.. image:: https://img.shields.io/circleci/build/gh/kingosticks/mopidy-tunein
+    :target: https://circleci.com/gh/kingosticks/mopidy-tunein
     :alt: CircleCI build status
 
-.. image:: https://img.shields.io/codecov/c/gh/kingosticks/Mopidy-TuneIn
-    :target: https://codecov.io/gh/kingosticks/Mopidy-TuneIn
+.. image:: https://img.shields.io/codecov/c/gh/kingosticks/mopidy-tunein
+    :target: https://codecov.io/gh/kingosticks/mopidy-tunein
     :alt: Test coverage
 
 `Mopidy <http://www.mopidy.com/>`_ extension for playing music from
