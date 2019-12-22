@@ -3,7 +3,13 @@ Changelog
 *********
 
 
-1.0.0rc1 (21/12/19)
+v1.0.0 (2019-12-22)
+===================
+
+- Depend on final release of Mopidy 3.0.0.
+
+
+v1.0.0rc1 (21/12/19)
 ===================
 
 Alpha release.
