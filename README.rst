@@ -14,8 +14,8 @@ Mopidy-TuneIn
     :target: https://codecov.io/gh/kingosticks/mopidy-tunein
     :alt: Test coverage
 
-`Mopidy <http://www.mopidy.com/>`_ extension for playing music from
-`TuneIn <http://www.tunein.com>`_. Listen to the world’s radio with 70,000 stations of music, 
+`Mopidy <https://mopidy.com/>`_ extension for playing music from
+`TuneIn <https://tunein.com>`_. Listen to the world’s radio with 70,000 stations of music,
 sports and news streaming from every continent.
 
 Acknowledgement and thanks to Marius Wyss for his original version of this extension and Brian Hornsby's 
