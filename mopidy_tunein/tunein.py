@@ -191,7 +191,7 @@ class TuneIn:
     ID_UNKNOWN = "unknown"
 
     def __init__(self, timeout, filter_=None, session=None):
-        self._base_uri = "http://opml.radiotime.com/%s"
+        self._base_uri = "https://opml.radiotime.com/%s"
         self._session = session or requests.Session()
         self._timeout = timeout / 1000.0
         if filter_ in [TuneIn.ID_PROGRAM, TuneIn.ID_STATION]:
