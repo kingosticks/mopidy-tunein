@@ -75,7 +75,7 @@ def parse_m3u(data):
 def parse_pls(data):
     # Copied from mopidy.audio.playlists
     try:
-        cp = configparser.RawConfigParser()
+        cp = configparser.RawConfigParser(strict=False)
         cp.read_string(data.decode())
     except configparser.Error:
         return
