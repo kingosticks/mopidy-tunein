@@ -13,6 +13,7 @@ workflows:
       - black
       - check-manifest
       - flake8
+      - isort
 
 jobs:
   py39: &test-template
@@ -55,3 +56,5 @@ jobs:
   check-manifest: *test-template
 
   flake8: *test-template
+
+  isort: *test-template

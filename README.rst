@@ -70,7 +70,7 @@ Project resources
 
 - `Source code <https://github.com/kingosticks/mopidy-tunein>`_
 - `Issue tracker <https://github.com/kingosticks/mopidy-tunein/issues>`_
-- `Changelog <https://github.com/kingosticks/mopidy-tunein/blob/master/CHANGELOG.rst>`_
+- `Changelog <https://github.com/kingosticks/mopidy-tunein/releases>`_
 
 
 Credits

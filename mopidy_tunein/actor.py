@@ -3,20 +3,18 @@ import time
 
 import pykka
 import requests
-
 from mopidy import backend, exceptions, httpclient
 from mopidy.audio import scan
-
-# TODO: Something else, using internal APIs is not cool.
 from mopidy.internal import http, playlists
 from mopidy.models import Ref, SearchResult
-from mopidy_tunein import translator, tunein, Extension, __version__
+
+from mopidy_tunein import Extension, translator, tunein
 
 logger = logging.getLogger(__name__)
 
 
 def get_requests_session(proxy_config):
-    user_agent = f"{Extension.dist_name}/{__version__}"
+    user_agent = f"{Extension.dist_name}/{Extension.version}"
     proxy = httpclient.format_proxy(proxy_config)
     full_user_agent = httpclient.format_user_agent(user_agent)
 

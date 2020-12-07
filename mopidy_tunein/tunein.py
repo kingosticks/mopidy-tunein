@@ -3,14 +3,12 @@ import io
 import logging
 import re
 import time
+import xml.etree.ElementTree as elementtree  # noqa: N813
 from collections import OrderedDict
 from contextlib import closing
 from urllib.parse import urlparse
 
 import requests
-
-import xml.etree.ElementTree as elementtree  # noqa: N813
-
 
 logger = logging.getLogger(__name__)
 
