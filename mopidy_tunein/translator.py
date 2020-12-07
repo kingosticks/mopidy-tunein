@@ -3,6 +3,7 @@ import re
 from urllib import request
 
 from mopidy.models import Album, Artist, Image, Ref, Track
+
 from mopidy_tunein.tunein import TuneIn
 
 logger = logging.getLogger(__name__)
