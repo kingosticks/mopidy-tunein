@@ -139,6 +139,10 @@ class TuneInLibrary(backend.LibraryProvider):
 
 
 class TuneInPlayback(backend.PlaybackProvider):
+    def __init__(self, audio, backend):
+        super().__init__(audio, backend)
+        self._stream_info = None
+
     def translate_uri(self, uri):
         variant, identifier = translator.parse_uri(uri)
         station = self.backend.tunein.station(identifier)
@@ -162,13 +166,21 @@ class TuneInPlayback(backend.PlaybackProvider):
         return None
 
     def unwrap_stream(self, uri):
-        unwrapped_uri, _ = _unwrap_stream(
+        unwrapped_uri, self._stream_info = _unwrap_stream(
             uri,
             timeout=self.backend._timeout,
             scanner=self.backend._scanner,
             requests_session=self.backend._session,
         )
         return unwrapped_uri
+
+    def is_live(self, uri):
+        return (
+            self._stream_info is not None
+            and self._stream_info.uri == uri
+            and self._stream_info.playable
+            and not self._stream_info.seekable
+        )
 
 
 # Shamelessly taken from mopidy.stream.actor
