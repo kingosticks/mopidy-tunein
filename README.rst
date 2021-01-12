@@ -6,9 +6,9 @@ Mopidy-TuneIn
     :target: https://pypi.org/project/Mopidy-TuneIn/
     :alt: Latest PyPI version
 
-.. image:: https://img.shields.io/circleci/build/gh/kingosticks/mopidy-tunein
-    :target: https://circleci.com/gh/kingosticks/mopidy-tunein
-    :alt: CircleCI build status
+.. image:: https://img.shields.io/github/workflow/status/kingosticks/mopidy-tunein/CI
+    :target: https://github.com/kingosticks/mopidy-tunein/actions
+    :alt: CI build status
 
 .. image:: https://img.shields.io/codecov/c/gh/kingosticks/mopidy-tunein
     :target: https://codecov.io/gh/kingosticks/mopidy-tunein
