@@ -188,7 +188,7 @@ class TuneIn:
     ID_STREAM = "stream"
     ID_UNKNOWN = "unknown"
 
-    def __init__(self, timeout, filter_=None, session=None):
+    def __init__(self, timeout, filter_=None, formats="*", session=None):
         self._base_uri = "https://opml.radiotime.com/%s"
         self._session = session or requests.Session()
         self._timeout = timeout / 1000.0
@@ -197,6 +197,7 @@ class TuneIn:
         else:
             self._filter = ""
         self._stations = {}
+        self._formats = f"&formats={','.join(formats)}" if formats else ""
 
     def reload(self):
         self._stations.clear()
@@ -368,7 +369,7 @@ class TuneIn:
             logger.debug("Empty search query")
             return []
         logger.debug(f"Searching TuneIn for '{query}'")
-        args = f"&query={query}{self._filter}"
+        args = f"&query={query}{self._filter}{self._formats}"
         search_results = self._tunein("Search.ashx", args)
         results = []
         for item in self._flatten(search_results):

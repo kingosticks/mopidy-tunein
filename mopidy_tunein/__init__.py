@@ -21,6 +21,7 @@ class Extension(ext.Extension):
         schema["filter"] = config.String(
             optional=True, choices=("station", "program")
         )
+        schema["formats"] = config.List(optional=True)
         return schema
 
     def setup(self, registry):
