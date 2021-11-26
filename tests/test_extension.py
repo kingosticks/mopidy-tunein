@@ -19,3 +19,4 @@ class ExtensionTest(unittest.TestCase):
 
         self.assertIn("timeout", schema)
         self.assertIn("filter", schema)
+        self.assertIn("formats", schema)

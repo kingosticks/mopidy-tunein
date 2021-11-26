@@ -63,6 +63,8 @@ The following configuration values are available:
 - ``tunein/enabled``: If the TuneIn extension should be enabled or not. Defaults to true.
 - ``tunein/filter``:  Limit the search results. ``station``, ``program`` or leave blank to disable filtering. Defaults to blank.
 - ``tunein/timeout``: Milliseconds before giving up waiting for results. Defaults to ``5000``.
+- ``tunein/formats``: List of formats supported by local Mopidy installation. Streams that are aren't available in any compatible
+  format are not returned by search. Defaults to ``*`` (all formats).
 
 
 Project resources

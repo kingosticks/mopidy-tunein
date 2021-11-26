@@ -34,6 +34,7 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
         self._session = get_requests_session(config["proxy"])
         self._timeout = config["tunein"]["timeout"]
         self._filter = config["tunein"]["filter"]
+        self._formats = config["tunein"]["formats"]
 
         self._scanner = scan.Scanner(
             timeout=config["tunein"]["timeout"], proxy_config=config["proxy"]
@@ -41,6 +42,7 @@ class TuneInBackend(pykka.ThreadingActor, backend.Backend):
         self.tunein = tunein.TuneIn(
             config["tunein"]["timeout"],
             config["tunein"]["filter"],
+            config["tunein"]["formats"],
             self._session,
         )
         self.library = TuneInLibrary(self)
